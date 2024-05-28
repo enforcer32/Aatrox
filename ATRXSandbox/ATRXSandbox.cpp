@@ -2,6 +2,7 @@
 
 #include <ATRXEngine/Core/Logger.h>
 #include <ATRXEngine/Core/Assertion.h>
+#include <ATRXEngine/Core/Window.h>
 
 int main()
 {
@@ -9,7 +10,8 @@ int main()
 
 	ATRX_LOG_INFO("INFO");
 
-	ATRX_ASSERT(1 == 0, "ERROR");
+	std::unique_ptr<ATRX::Window> window = ATRX::Window::CreateInstance();
+	window->OnInit({});
 
 	return 0;
 }
