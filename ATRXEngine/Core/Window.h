@@ -12,6 +12,8 @@ namespace ATRX
 		std::string Name;
 		uint32_t Width;
 		uint32_t Height;
+		uint32_t XPos;
+		uint32_t YPos;
 		bool VSync;
 	};
 

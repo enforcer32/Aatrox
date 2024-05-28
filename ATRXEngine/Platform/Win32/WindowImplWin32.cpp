@@ -1,8 +1,74 @@
 #include "ATRXEngine/Platform/Win32/WindowImplWin32.h"
 #include "ATRXEngine/Core/Logger.h"
 
+#include <windowsx.h>
+
 namespace ATRX
 {
+	LRESULT WindowImplWin32WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	{
+		switch (msg)
+		{
+		// Window Events
+		case WM_CLOSE:
+			return 0;
+		case WM_DESTROY:
+			PostQuitMessage(0);
+			return 0;
+		case WM_ERASEBKGND:
+			return 1;
+		case WM_SIZE:
+		{
+			RECT size;
+			GetClientRect(hwnd, &size);
+			uint32_t width = size.right - size.left;
+			uint32_t height = size.bottom - size.top;
+			//Event WindowResize
+			break;
+		}
+
+		// Input Events
+		case WM_KEYUP:
+		case WM_KEYDOWN:
+		case WM_SYSKEYUP:
+		case WM_SYSKEYDOWN:
+		{
+			uint8_t pressed = (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN);
+			break;
+		}
+
+		// Mouse Events
+		case WM_MOUSEMOVE:
+		{
+			int32_t xPos = GET_X_LPARAM(lParam);
+			int32_t yPos = GET_Y_LPARAM(lParam);
+			break;
+		}
+		case WM_MOUSEWHEEL:
+		{
+			int32_t zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+			if (zDelta)
+				zDelta = (zDelta < 0) ? -1 : 1;
+			break;
+		}
+		case WM_LBUTTONUP:
+		case WM_LBUTTONDOWN:
+		case WM_RBUTTONUP:
+		case WM_RBUTTONDOWN:
+		case WM_MBUTTONUP:
+		case WM_MBUTTONDOWN:
+		{
+			uint8_t pressed = (msg == WM_LBUTTONUP || msg == WM_RBUTTONDOWN || msg == WM_MBUTTONDOWN);
+			break;
+		}
+
+		default:
+			break;
+		}
+
+		return DefWindowProcA(hwnd, msg, wParam, lParam);
+	}
+
 	std::unique_ptr<Window> Window::CreateInstance()
 	{
 		return std::make_unique<WindowImplWin32>();
@@ -13,7 +79,13 @@ namespace ATRX
 		m_WinPrivData.Name = props.Name;
 		m_WinPrivData.Width = props.Width;
 		m_WinPrivData.Height = props.Height;
+		m_WinPrivData.XPos = props.XPos;
+		m_WinPrivData.YPos = props.YPos;
 		m_WinPrivData.VSync = props.VSync;
+		m_WinPrivData.HInstance = GetModuleHandleA(0);
+		if (!RegisterWindowClass()) return false;
+		if (!CreateWindowContext()) return false;
+		if (!ShowTheWindow()) return false;
 		ATRX_LOG_INFO("WindowImplWin32 Initialized!");
 		return m_Initialized = true;
 	}
@@ -22,13 +94,21 @@ namespace ATRX
 	{
 		if (m_Initialized)
 		{
+			if (m_WinPrivData.HWnd)
+			{
+				UnregisterClass(m_WinPrivData.Name.c_str(), m_WinPrivData.HInstance);
+				DestroyWindow(m_WinPrivData.HWnd);
+				m_WinPrivData.HWnd = NULL;
+			}
+
 			m_Initialized = false;
 		}
 	}
 
 	void WindowImplWin32::OnUpdate()
 	{
-		// PollEvents & SwapBuffers
+		// PollEvents
+		ProcessMessages();
 	}
 
 	const WindowProperties& WindowImplWin32::GetProperties() const
@@ -67,5 +147,79 @@ namespace ATRX
 	const void* WindowImplWin32::GetNativeWindow() const
 	{
 		return m_NativeWindow;
+	}
+
+	bool WindowImplWin32::RegisterWindowClass()
+	{
+		HICON icon = LoadIconA(m_WinPrivData.HInstance, IDI_APPLICATION);
+
+		WNDCLASSEXA windowClass;
+		windowClass.style = CS_DBLCLKS;
+		windowClass.lpfnWndProc = WindowImplWin32WndProc;
+		windowClass.cbClsExtra = 0;
+		windowClass.cbWndExtra = 0;
+		windowClass.hInstance = m_WinPrivData.HInstance;
+		windowClass.hIcon = icon;
+		windowClass.hIconSm = icon;
+		windowClass.hCursor = LoadCursorA(NULL, IDC_ARROW);
+		windowClass.hbrBackground = NULL;
+		windowClass.lpszMenuName = NULL;
+		windowClass.lpszClassName = m_WinPrivData.Name.c_str();
+		windowClass.cbSize = sizeof(WNDCLASSEXA);
+		
+		if (!RegisterClassExA(&windowClass))
+		{
+			MessageBoxA(0, "Failed to RegisterWindowClass", "Error", MB_ICONEXCLAMATION | MB_OK);
+			return false;
+		}
+
+		return true;
+	}
+
+	bool WindowImplWin32::CreateWindowContext()
+	{
+		uint32_t windowWidth = m_WinPrivData.Width, windowHeight = m_WinPrivData.Height, windowX = m_WinPrivData.XPos, windowY = m_WinPrivData.YPos;
+		uint32_t windowStyle = WS_CAPTION | WS_OVERLAPPED | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_THICKFRAME;
+		uint32_t windowStyleEx = WS_EX_APPWINDOW;
+
+		// Adjust Client Area
+		RECT borderSize{};
+		AdjustWindowRectEx(&borderSize, windowStyle, 0, windowStyleEx);
+		windowWidth += borderSize.right - borderSize.left;
+		windowHeight += borderSize.bottom - borderSize.top;
+		windowX += borderSize.left;
+		windowY += borderSize.top;
+
+		HWND handle = CreateWindowExA(windowStyleEx, m_WinPrivData.Name.c_str(), m_WinPrivData.Name.c_str(), windowStyle, windowX, windowY, windowWidth, windowHeight, NULL, NULL, m_WinPrivData.HInstance, nullptr);
+		if (!handle)
+		{
+			MessageBoxA(0, "Failed to CreateWindowContext", "Error", MB_ICONEXCLAMATION | MB_OK);
+			return false;
+		}
+
+		m_WinPrivData.HWnd = handle;
+		return true;
+	}
+
+	bool WindowImplWin32::ShowTheWindow()
+	{
+		uint32_t activate = 1;
+		uint32_t showWindowFlags = activate ? SW_SHOW : SW_SHOWNOACTIVATE;
+		ShowWindow(m_WinPrivData.HWnd, showWindowFlags);
+		SetForegroundWindow(m_WinPrivData.HWnd);
+		SetFocus(m_WinPrivData.HWnd);
+		return true;
+	}
+
+	bool WindowImplWin32::ProcessMessages()
+	{
+		MSG msg;
+		ZeroMemory(&msg, sizeof(MSG));
+		while (PeekMessageA(&msg, m_WinPrivData.HWnd, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg); // Get CHAR Down Events
+			DispatchMessageA(&msg); // Dispatch to WindowProc
+		}
+		return true;
 	}
 }

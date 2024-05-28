@@ -2,6 +2,8 @@
 
 #include "ATRXEngine/Core/Window.h"
 
+#include <Windows.h>
+
 namespace ATRX
 {
 	class WindowImplWin32 : public Window
@@ -22,16 +24,27 @@ namespace ATRX
 		virtual const void* GetNativeWindow() const override;
 
 	private:
+		bool RegisterWindowClass();
+		bool CreateWindowContext();
+		bool ShowTheWindow();
+		bool ProcessMessages();
+
+	private:
 		struct WindowPrivateData
 		{
 			std::string Name;
 			uint32_t Width;
 			uint32_t Height;
+			uint32_t XPos;
+			uint32_t YPos;
 			bool VSync;
+
+			HINSTANCE HInstance; // Application Instance
+			HWND HWnd; // Window Handle
 		};
 
-		bool m_Initialized;
-		void* m_NativeWindow;
+		bool m_Initialized = false;
+		void* m_NativeWindow = nullptr;
 		WindowPrivateData m_WinPrivData;
 	};
 }

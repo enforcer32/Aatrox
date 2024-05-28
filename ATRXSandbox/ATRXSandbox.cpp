@@ -7,11 +7,23 @@
 int main()
 {
 	ATRX::Logger::Init();
+	ATRX_LOG_INFO("ATRXSandbox");
 
-	ATRX_LOG_INFO("INFO");
+	ATRX::WindowProperties windowProperties;
+	windowProperties.Name = "ATRXSandbox";
+	windowProperties.Width = 640;
+	windowProperties.Height = 480;
+	windowProperties.XPos = 100;
+	windowProperties.YPos = 100;
+	windowProperties.VSync = false;
 
 	std::unique_ptr<ATRX::Window> window = ATRX::Window::CreateInstance();
-	window->OnInit({});
+	window->OnInit(windowProperties);
+
+	while (true)
+	{
+		window->OnUpdate();
+	}
 
 	return 0;
 }
