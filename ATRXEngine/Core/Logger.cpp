@@ -6,7 +6,7 @@
 
 namespace ATRX
 {
-	void Logger::Init(const std::string& name)
+	void Logger::OnInit(const std::string& name)
 	{
 		spdlog::set_pattern("%^[%T] %n: %v%$");
 		s_EngineLogger = spdlog::stdout_color_mt("ATRXEngineLogger");

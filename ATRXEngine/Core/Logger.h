@@ -13,7 +13,7 @@ namespace ATRX
 	class ATRX_API Logger
 	{
 	public:
-		static void Init(const std::string& name = "AatroxLogger");
+		static void OnInit(const std::string& name = "AatroxLogger");
 		inline static std::shared_ptr<spdlog::logger> GetEngineLogger() { return s_EngineLogger; }
 		inline static std::shared_ptr<spdlog::logger> GetLogger() { return s_Logger; }
 

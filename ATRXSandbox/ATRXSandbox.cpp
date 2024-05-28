@@ -1,14 +1,36 @@
 #include <iostream>
 
 #include <ATRXEngine/Core/Logger.h>
-#include <ATRXEngine/Core/Assertion.h>
-#include <ATRXEngine/Core/Window.h>
+#include <ATRXEngine/Core/Engine.h>
+
+namespace ATRX
+{
+	class ATRXSandbox : public Engine
+	{
+	public:
+		ATRXSandbox(const EngineProperties& engineProps)
+			: Engine(engineProps)
+		{
+		}
+
+		virtual bool OnInit() override
+		{
+			ATRX_LOG_INFO("Initializing ATRXSandbox");
+			return true;
+		}
+
+		virtual void OnDestroy() override
+		{
+		}
+
+		virtual void OnUpdate(double dt) override
+		{
+		}
+	};
+}
 
 int main()
 {
-	ATRX::Logger::Init();
-	ATRX_LOG_INFO("ATRXSandbox");
-
 	ATRX::WindowProperties windowProperties;
 	windowProperties.Name = "ATRXSandbox";
 	windowProperties.Width = 640;
@@ -17,13 +39,10 @@ int main()
 	windowProperties.YPos = 100;
 	windowProperties.VSync = false;
 
-	std::unique_ptr<ATRX::Window> window = ATRX::Window::CreateInstance();
-	window->OnInit(windowProperties);
+	ATRX::EngineProperties engineProperties;
+	engineProperties.WindowProperties = windowProperties;
 
-	while (true)
-	{
-		window->OnUpdate();
-	}
-
+	ATRX::ATRXSandbox sandbox(engineProperties);
+	sandbox.OnStart();
 	return 0;
 }

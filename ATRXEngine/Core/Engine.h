@@ -1,0 +1,42 @@
+#pragma once
+
+#include "ATRXEngine/Core/Window.h"
+
+namespace ATRX
+{
+	struct EngineProperties
+	{
+		WindowProperties WindowProperties;
+	};
+
+	class ATRX_API Engine
+	{
+	public:
+		Engine(const Engine&) = delete;
+		Engine(Engine&&) = delete;
+		Engine& operator=(const Engine&) = delete;
+		Engine& operator=(Engine&&) = delete;
+		virtual ~Engine();
+
+		void OnStart();
+		void OnShutdown();
+		virtual bool OnInit() = 0;
+		virtual void OnDestroy() = 0;
+		virtual void OnUpdate(double dt) = 0;
+
+		static Engine* Get();
+		const EngineProperties& GetProperties() const;
+		const Window& GetWindow() const;
+
+	protected:
+		Engine(const EngineProperties& engineProps);
+
+	protected:
+		EngineProperties m_Properties;
+
+	private:
+		static Engine* s_Instance;
+		bool m_Initialized = false, m_Running = false;
+		std::unique_ptr<Window> m_Window;
+	};
+}

@@ -5,12 +5,16 @@ file(GLOB_RECURSE ATRXEngineSources
 	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Logger.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Logger.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Window.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Timer.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Engine.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Engine.cpp"
 )
 
 if(WIN32)
 	file(GLOB_RECURSE ATRXEnginePlatformSources
 		"${CMAKE_CURRENT_SOURCE_DIR}/Platform/Win32/WindowImplWin32.h"
 		"${CMAKE_CURRENT_SOURCE_DIR}/Platform/Win32/WindowImplWin32.cpp"
+		"${CMAKE_CURRENT_SOURCE_DIR}/Platform/Win32/TimerImplWin32.cpp"
 	)
 endif(WIN32)
 
