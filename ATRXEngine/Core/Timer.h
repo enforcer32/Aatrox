@@ -8,6 +8,7 @@ namespace ATRX
 	{
 	public:
 		static bool OnInit();
+		static void OnDestroy();
 		static double GetTimeSeconds();
 		static double GetTimeMilliSeconds();
 	};

@@ -14,6 +14,7 @@ namespace ATRX
 	{
 	public:
 		static void OnInit(const std::string& name = "AatroxLogger");
+		static void OnDestroy();
 		inline static std::shared_ptr<spdlog::logger> GetEngineLogger() { return s_EngineLogger; }
 		inline static std::shared_ptr<spdlog::logger> GetLogger() { return s_Logger; }
 

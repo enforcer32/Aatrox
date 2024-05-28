@@ -20,6 +20,10 @@ namespace ATRX
 		sinks2[0] = std::make_shared<spdlog::sinks::ostream_sink_st>(s_Stream);*/
 	}
 
+	void Logger::OnDestroy()
+	{
+	}
+
 	void Logger::SaveLastLog()
 	{
 		s_Logs.push_back(s_Stream.str());

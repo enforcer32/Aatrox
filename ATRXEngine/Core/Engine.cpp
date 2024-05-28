@@ -2,6 +2,7 @@
 #include "ATRXEngine/Core/Assertion.h"
 #include "ATRXEngine/Core/Logger.h"
 #include "ATRXEngine/Core/Timer.h"
+#include "ATRXEngine/Core/Memory.h"
 
 namespace ATRX
 {
@@ -15,6 +16,9 @@ namespace ATRX
 
 		Logger::OnInit();
 
+		if(!MemoryManager::OnInit())
+			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize MemoryManager!");
+
 		m_Window = Window::CreateInstance();
 		if (!m_Window->OnInit(m_Properties.WindowProperties))
 			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize Window!");
@@ -26,7 +30,10 @@ namespace ATRX
 	{
 		if (m_Initialized)
 		{
+			Timer::OnDestroy();
 			m_Window->OnDestroy();
+			MemoryManager::OnDestroy();
+			Logger::OnDestroy();
 		}
 	}
 
@@ -37,6 +44,12 @@ namespace ATRX
 
 		m_Initialized = true;
 		m_Running = true;
+
+		// TMP
+		MemoryManager::Allocate(1024, AllocateType::Array);
+		MemoryManager::Allocate(1024, AllocateType::Array);
+		MemoryManager::Allocate(4096, AllocateType::Unknown);
+		MemoryManager::DebugPrintStatistics();
 
 		while (m_Running)
 		{

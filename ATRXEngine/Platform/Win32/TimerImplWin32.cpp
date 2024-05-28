@@ -17,6 +17,10 @@ namespace ATRX
 		return true;
 	}
 
+	void Timer::OnDestroy()
+	{
+	}
+
 	double Timer::GetTimeSeconds()
 	{
 		LARGE_INTEGER now;

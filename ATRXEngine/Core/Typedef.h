@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 // DLL Export/Imports
 #ifdef ATRX_ENGINE_BUILD
 	#ifdef _MSC_VER

@@ -8,6 +8,8 @@ file(GLOB_RECURSE ATRXEngineSources
 	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Timer.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Engine.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Engine.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Memory.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Memory.cpp"
 )
 
 if(WIN32)
