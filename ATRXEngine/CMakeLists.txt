@@ -10,6 +10,11 @@ file(GLOB_RECURSE ATRXEngineSources
 	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Engine.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Memory.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Memory.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Event.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Event.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Events/Event.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Events/WindowEvents.h"
+
 )
 
 if(WIN32)

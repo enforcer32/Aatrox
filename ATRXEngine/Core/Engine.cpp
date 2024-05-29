@@ -15,6 +15,7 @@ namespace ATRX
 		m_Properties = engineProps;
 
 		Logger::OnInit();
+		Timer::OnInit();
 
 		if(!MemoryManager::OnInit())
 			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize MemoryManager!");
@@ -23,16 +24,19 @@ namespace ATRX
 		if (!m_Window->OnInit(m_Properties.WindowProperties))
 			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize Window!");
 
-		Timer::OnInit();
+		m_EventManager = std::make_shared<EventManager>();
+		if(!m_EventManager->OnInit())
+			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize m_EventManager!");
 	}
 
 	Engine::~Engine()
 	{
 		if (m_Initialized)
 		{
-			Timer::OnDestroy();
+			m_EventManager->OnDestroy();
 			m_Window->OnDestroy();
 			MemoryManager::OnDestroy();
+			Timer::OnDestroy();
 			Logger::OnDestroy();
 		}
 	}
