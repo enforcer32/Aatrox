@@ -6,6 +6,7 @@ file(GLOB_RECURSE ATRXEngineSources
 	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Logger.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Window.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Timer.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Core/DeltaTime.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Engine.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Engine.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Memory.h"
@@ -14,7 +15,13 @@ file(GLOB_RECURSE ATRXEngineSources
 	"${CMAKE_CURRENT_SOURCE_DIR}/Core/Event.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Events/Event.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Events/WindowEvents.h"
-
+	"${CMAKE_CURRENT_SOURCE_DIR}/Input/InputCodes.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Input/Input.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Input/Input.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Input/Keyboard.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Input/Keyboard.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Input/Mouse.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Input/Mouse.cpp"
 )
 
 if(WIN32)
