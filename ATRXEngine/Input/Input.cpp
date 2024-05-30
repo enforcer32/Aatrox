@@ -3,11 +3,13 @@
 namespace ATRX
 {
 	bool Input::m_Initialized = false;
+	Keyboard Input::m_Keyboard;
+	Mouse Input::m_Mouse;
 
 	bool Input::OnInit()
 	{
-		if (!m_Keyboard.Init()) return false;
-		if (!m_Mouse.Init()) return false;
+		if (!m_Keyboard.OnInit()) return false;
+		if (!m_Mouse.OnInit()) return false;
 		return m_Initialized = true;
 	}
 
@@ -15,8 +17,8 @@ namespace ATRX
 	{
 		if (m_Initialized)
 		{
-			m_Mouse.Destroy();
-			m_Keyboard.Destroy();
+			m_Mouse.OnDestroy();
+			m_Keyboard.OnDestroy();
 			m_Initialized = false;
 		}
 	}

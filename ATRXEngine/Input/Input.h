@@ -1,11 +1,12 @@
 #pragma once
 
+#include "ATRXEngine/Core/Typedef.h"
 #include "ATRXEngine/Input/Keyboard.h"
 #include "ATRXEngine/Input/Mouse.h"
 
 namespace ATRX
 {
-	class Input
+	class ATRX_API Input
 	{
 	public:
 		// Keyboard

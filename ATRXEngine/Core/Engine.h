@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ATRXEngine/Core/Window.h"
-#include "ATRXEngine/Core/Event.h"
 
 namespace ATRX
 {
@@ -34,7 +33,6 @@ namespace ATRX
 
 	protected:
 		EngineProperties m_Properties;
-		std::shared_ptr<EventManager> m_EventManager;
 
 	private:
 		static Engine* s_Instance;

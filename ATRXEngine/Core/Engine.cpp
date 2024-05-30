@@ -3,6 +3,7 @@
 #include "ATRXEngine/Core/Logger.h"
 #include "ATRXEngine/Core/Timer.h"
 #include "ATRXEngine/Core/Memory.h"
+#include "ATRXEngine/Event/EventBus.h"
 
 namespace ATRX
 {
@@ -24,8 +25,7 @@ namespace ATRX
 		if (!m_Window->OnInit(m_Properties.WindowProperties))
 			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize Window!");
 
-		m_EventManager = std::make_shared<EventManager>();
-		if(!m_EventManager->OnInit())
+		if(!EventBus::OnInit())
 			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize m_EventManager!");
 	}
 
@@ -33,7 +33,7 @@ namespace ATRX
 	{
 		if (m_Initialized)
 		{
-			m_EventManager->OnDestroy();
+			EventBus::OnDestroy();
 			m_Window->OnDestroy();
 			MemoryManager::OnDestroy();
 			Timer::OnDestroy();
