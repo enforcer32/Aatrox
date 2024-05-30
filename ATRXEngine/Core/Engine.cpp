@@ -4,6 +4,7 @@
 #include "ATRXEngine/Core/Timer.h"
 #include "ATRXEngine/Core/Memory.h"
 #include "ATRXEngine/Event/EventBus.h"
+#include "ATRXEngine/Input/Input.h"
 
 namespace ATRX
 {
@@ -26,13 +27,17 @@ namespace ATRX
 			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize Window!");
 
 		if(!EventBus::OnInit())
-			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize m_EventManager!");
+			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize EventBus!");
+
+		if (!Input::OnInit())
+			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize Input!");
 	}
 
 	Engine::~Engine()
 	{
 		if (m_Initialized)
 		{
+			Input::OnDestroy();
 			EventBus::OnDestroy();
 			m_Window->OnDestroy();
 			MemoryManager::OnDestroy();
@@ -57,8 +62,9 @@ namespace ATRX
 
 		while (m_Running)
 		{
-			OnUpdate(1);
 			m_Window->OnUpdate();
+			OnUpdate(1);
+			Input::OnUpdate();
 		}
 
 		OnDestroy();

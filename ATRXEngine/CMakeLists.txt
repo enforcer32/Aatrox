@@ -16,6 +16,8 @@ file(GLOB_RECURSE ATRXEngineSources
 	"${CMAKE_CURRENT_SOURCE_DIR}/Event/EventCallback.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Events/Event.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Events/WindowEvents.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Events/KeyEvents.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Events/MouseEvents.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Input/InputCodes.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Input/Input.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Input/Input.cpp"

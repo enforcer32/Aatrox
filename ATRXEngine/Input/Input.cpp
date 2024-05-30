@@ -1,4 +1,7 @@
 #include "ATRXEngine/Input/Input.h"
+#include "ATRXEngine/Event/EventBus.h"
+#include "ATRXEngine/Events/KeyEvents.h"
+#include "ATRXEngine/Events/MouseEvents.h"
 
 namespace ATRX
 {
@@ -88,20 +91,30 @@ namespace ATRX
 	void Input::OnKeyEvent(KeyEventType type, KeyCode key)
 	{
 		m_Keyboard.OnKeyEvent(type, key);
+		if (type == KeyEventType::Press)
+			EventBus::Emit<KeyPressEvent>(key);
+		else if (type == KeyEventType::Release)
+			EventBus::Emit<KeyReleaseEvent>(key);
 	}
 
 	void Input::OnMouseButtonEvent(MouseEventType type, MouseCode button)
 	{
 		m_Mouse.OnMouseButtonEvent(type, button);
+		if (type == MouseEventType::Press)
+			EventBus::Emit<MouseButtonPressEvent>(button);
+		else if (type == MouseEventType::Release)
+			EventBus::Emit<MouseButtonReleaseEvent>(button);
 	}
 
 	void Input::OnMouseScrollEvent(int32_t state)
 	{
 		m_Mouse.OnMouseScrollEvent(state);
+		EventBus::Emit<MouseScrollEvent>(state);
 	}
 
 	void Input::OnMouseMoveEvent(MousePoint<double> position)
 	{
 		m_Mouse.OnMouseMoveEvent(position);
+		EventBus::Emit<MouseMoveEvent>(position);
 	}
 }
