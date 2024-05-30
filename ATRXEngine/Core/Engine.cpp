@@ -19,8 +19,8 @@ namespace ATRX
 		Logger::OnInit();
 		Timer::OnInit();
 
-		if(!MemoryManager::OnInit())
-			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize MemoryManager!");
+		if(!MemoryAllocator::OnInit())
+			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize MemoryAllocator!");
 
 		m_Window = Window::CreateInstance();
 		if (!m_Window->OnInit(m_Properties.WindowProperties))
@@ -40,7 +40,7 @@ namespace ATRX
 			Input::OnDestroy();
 			EventBus::OnDestroy();
 			m_Window->OnDestroy();
-			MemoryManager::OnDestroy();
+			MemoryAllocator::OnDestroy();
 			Timer::OnDestroy();
 			Logger::OnDestroy();
 		}
@@ -55,10 +55,13 @@ namespace ATRX
 		m_Running = true;
 
 		// TMP
-		MemoryManager::Allocate(1024, AllocateType::Array);
-		MemoryManager::Allocate(1024, AllocateType::Array);
-		MemoryManager::Allocate(4096, AllocateType::Unknown);
-		MemoryManager::DebugPrintStatistics();
+		MemoryAllocator::Allocate(1024, AllocateType::Array);
+		MemoryAllocator::Allocate(1024, AllocateType::Array);
+		MemoryAllocator::Allocate(4096, AllocateType::Unknown);
+		MemoryAllocator::DebugPrintStatistics();
+
+		// Events
+		EventBus::Subscribe<KeyPressEvent>(this, &Engine::OnKeyPressEvent);
 
 		while (m_Running)
 		{
@@ -88,5 +91,16 @@ namespace ATRX
 	const Window& Engine::GetWindow() const
 	{
 		return *m_Window;
+	}
+
+	void Engine::OnKeyPressEvent(KeyPressEvent& ev)
+	{
+		ATRX_LOG_INFO("PRESS FIRED({})!\n", (int)ev.GetKey());
+
+		if (ev.GetKey() == KeyCode::Escape)
+		{
+			ATRX_LOG_INFO("Quitting Engine....");
+			OnShutdown();
+		}
 	}
 }

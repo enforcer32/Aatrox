@@ -5,24 +5,24 @@
 
 namespace ATRX
 {
-	AllocationStats MemoryManager::s_Stats;
+	AllocationStats MemoryAllocator::s_Stats;
 
-	bool MemoryManager::OnInit()
+	bool MemoryAllocator::OnInit()
 	{
 		std::memset(&s_Stats, 0, sizeof(AllocationStats));
 		return true;
 	}
 	
-	void MemoryManager::OnDestroy()
+	void MemoryAllocator::OnDestroy()
 	{
 	}
 
-	const AllocationStats& MemoryManager::GetStatistics()
+	const AllocationStats& MemoryAllocator::GetStatistics()
 	{
 		return s_Stats;
 	}
 
-	void MemoryManager::DebugPrintStatistics()
+	void MemoryAllocator::DebugPrintStatistics()
 	{
 #ifdef ATRX_ENGINE_DEBUG
 		std::ostringstream oss;
@@ -36,7 +36,7 @@ namespace ATRX
 #endif // ATRX_ENGINE_DEBUG
 	}
 
-	void* MemoryManager::Allocate(size_t size, AllocateType type)
+	void* MemoryAllocator::Allocate(size_t size, AllocateType type)
 	{
 		if (type == AllocateType::Unknown)
 			ATRX_LOG_WARN("MemoryManager->Allocating {} bytes Type Unknown!", size);
@@ -49,7 +49,7 @@ namespace ATRX
 		return block;
 	}
 
-	void MemoryManager::Free(void* block, size_t size, AllocateType type)
+	void MemoryAllocator::Free(void* block, size_t size, AllocateType type)
 	{
 		if (type == AllocateType::Unknown)
 			ATRX_LOG_WARN("MemoryManager->Freeing {} bytes Type Unknown!", size);
@@ -60,17 +60,17 @@ namespace ATRX
 		delete[] block;
 	}
 
-	void MemoryManager::Zero(void* block, size_t size)
+	void MemoryAllocator::Zero(void* block, size_t size)
 	{
 		std::memset(block, 0, size);
 	}
 
-	void MemoryManager::Copy(void* dest, const void* src, size_t size)
+	void MemoryAllocator::Copy(void* dest, const void* src, size_t size)
 	{
 		std::memcpy(dest, src, size);
 	}
 
-	void MemoryManager::Set(void* dest, int32_t val, size_t size)
+	void MemoryAllocator::Set(void* dest, int32_t val, size_t size)
 	{
 		std::memset(dest, val, size);
 	}

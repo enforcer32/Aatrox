@@ -23,18 +23,18 @@ namespace ATRX
 		static MousePoint<double> GetPosition();
 		static MousePoint<double> GetOldPosition();
 
-	private:
-		friend class Engine;
-
-		static bool OnInit();
-		static void OnDestroy();
-		static void OnUpdate();
-		static void Reset();
-
+		// Processors
 		static void OnKeyEvent(KeyEventType type, KeyCode key);
 		static void OnMouseButtonEvent(MouseEventType type, MouseCode button);
 		static void OnMouseScrollEvent(int32_t state);
 		static void OnMouseMoveEvent(MousePoint<double> position);
+
+	private:
+		friend class Engine;
+		static bool OnInit();
+		static void OnDestroy();
+		static void OnUpdate();
+		static void Reset();
 
 	private:
 		static bool m_Initialized;

@@ -20,7 +20,7 @@ namespace ATRX
 		size_t Allocations[(size_t)AllocateType::AllocateTypeSize];
 	};
 
-	class ATRX_API MemoryManager
+	class ATRX_API MemoryAllocator
 	{
 	public:
 		static bool OnInit();

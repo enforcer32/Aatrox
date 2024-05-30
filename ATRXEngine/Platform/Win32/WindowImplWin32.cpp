@@ -1,5 +1,6 @@
 #include "ATRXEngine/Platform/Win32/WindowImplWin32.h"
 #include "ATRXEngine/Core/Logger.h"
+#include "ATRXEngine/Input/Input.h"
 
 #include <windowsx.h>
 
@@ -34,23 +35,13 @@ namespace ATRX
 		case WM_SYSKEYDOWN:
 		{
 			uint8_t pressed = (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN);
+			KeyEventType type = (pressed) ? KeyEventType::Press : KeyEventType::Release;
+			KeyCode key = (KeyCode)wParam;
+			Input::OnKeyEvent(type, key);
 			break;
 		}
 
 		// Mouse Events
-		case WM_MOUSEMOVE:
-		{
-			int32_t xPos = GET_X_LPARAM(lParam);
-			int32_t yPos = GET_Y_LPARAM(lParam);
-			break;
-		}
-		case WM_MOUSEWHEEL:
-		{
-			int32_t zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
-			if (zDelta)
-				zDelta = (zDelta < 0) ? -1 : 1;
-			break;
-		}
 		case WM_LBUTTONUP:
 		case WM_LBUTTONDOWN:
 		case WM_RBUTTONUP:
@@ -59,9 +50,35 @@ namespace ATRX
 		case WM_MBUTTONDOWN:
 		{
 			uint8_t pressed = (msg == WM_LBUTTONUP || msg == WM_RBUTTONDOWN || msg == WM_MBUTTONDOWN);
+			MouseEventType type = (pressed) ? MouseEventType::Press : MouseEventType::Release;
+			MouseCode button = MouseCode::ButtonLast;
+			if (msg == WM_LBUTTONUP || msg == WM_LBUTTONDOWN)
+				button = MouseCode::ButtonLeft;
+			if (msg == WM_RBUTTONUP || msg == WM_RBUTTONDOWN)
+				button = MouseCode::ButtonRight;
+			if (msg == WM_MBUTTONUP || msg == WM_MBUTTONDOWN)
+				button = MouseCode::ButtonMiddle;
+			if(button != ButtonLast)
+				Input::OnMouseButtonEvent(type, button);
 			break;
 		}
-
+		case WM_MOUSEMOVE:
+		{
+			int32_t xPos = GET_X_LPARAM(lParam);
+			int32_t yPos = GET_Y_LPARAM(lParam);
+			Input::OnMouseMoveEvent(MousePoint{ (double)xPos, (double)yPos });
+			break;
+		}
+		case WM_MOUSEWHEEL:
+		{
+			int32_t zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+			if (zDelta)
+			{
+				zDelta = (zDelta < 0) ? -1 : 1;
+				Input::OnMouseScrollEvent(zDelta);
+			}
+			break;
+		}
 		default:
 			break;
 		}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ATRXEngine/Core/Window.h"
+#include "ATRXEngine/Events/KeyEvents.h"
 
 namespace ATRX
 {
@@ -30,6 +31,7 @@ namespace ATRX
 
 	protected:
 		Engine(const EngineProperties& engineProps);
+		virtual void OnKeyPressEvent(KeyPressEvent& ev);
 
 	protected:
 		EngineProperties m_Properties;
