@@ -3,6 +3,7 @@
 #include "ATRXEngine/Core/Window.h"
 #include "ATRXEngine/Events/KeyEvents.h"
 #include "ATRXEngine/Core/DeltaTime.h"
+#include "ATRXEngine/Renderer/Renderer.h"
 
 namespace ATRX
 {
@@ -42,5 +43,6 @@ namespace ATRX
 		static Engine* s_Instance;
 		bool m_Initialized = false, m_Running = false;
 		std::unique_ptr<Window> m_Window;
+		std::shared_ptr<Renderer> m_Renderer;
 	};
 }

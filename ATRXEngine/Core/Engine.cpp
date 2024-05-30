@@ -31,12 +31,16 @@ namespace ATRX
 
 		if (!Input::OnInit())
 			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize Input!");
+
+		if(!m_Renderer->OnInit())
+			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize Renderer!");
 	}
 
 	Engine::~Engine()
 	{
 		if (m_Initialized)
 		{
+			m_Renderer->OnDestroy();
 			Input::OnDestroy();
 			EventBus::OnDestroy();
 			m_Window->OnDestroy();
@@ -68,6 +72,10 @@ namespace ATRX
 			{
 				OnUpdate(dt);
 				OnRender(dt);
+
+				RenderPacket packet;
+				packet.DeltaTime = dt;
+				m_Renderer->DrawFrame(packet);
 			}
 
 			m_Window->OnUpdate();

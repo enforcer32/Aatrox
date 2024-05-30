@@ -27,6 +27,13 @@ file(GLOB_RECURSE ATRXEngineSources
 	"${CMAKE_CURRENT_SOURCE_DIR}/Input/Mouse.cpp"
 )
 
+file(GLOB_RECURSE ATRXEngineRendererSources
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/RendererBackend.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/RendererBackend.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/Renderer.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/Renderer.cpp"
+)
+
 if(WIN32)
 	file(GLOB_RECURSE ATRXEnginePlatformSources
 		"${CMAKE_CURRENT_SOURCE_DIR}/Platform/Win32/WindowImplWin32.h"
@@ -37,7 +44,7 @@ endif(WIN32)
 
 add_definitions(-DATRX_ENGINE_BUILD -DATRX_ENGINE_DEBUG)
 
-set(ATRXEngineSources ${ATRXEngineSources} ${ATRXEnginePlatformSources})
+set(ATRXEngineSources ${ATRXEngineSources} ${ATRXEnginePlatformSources} ${ATRXEngineRendererSources})
 add_library(${AATROX_ENGINE_TARGET_NAME} SHARED ${ATRXEngineSources})
 
 target_include_directories(${AATROX_ENGINE_TARGET_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../")
