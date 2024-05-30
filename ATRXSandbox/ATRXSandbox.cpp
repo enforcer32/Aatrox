@@ -23,7 +23,11 @@ namespace ATRX
 		{
 		}
 
-		virtual void OnUpdate(double dt) override
+		virtual void OnUpdate(DeltaTime dt) override
+		{
+		}
+
+		virtual void OnRender(DeltaTime dt) override
 		{
 		}
 	};

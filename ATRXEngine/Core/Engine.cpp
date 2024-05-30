@@ -51,22 +51,26 @@ namespace ATRX
 		if (!OnInit())
 			ATRX_LOG_CRITICAL("Engine OnInit Failed!");
 
-		m_Initialized = true;
-		m_Running = true;
-
-		// TMP
-		MemoryAllocator::Allocate(1024, AllocateType::Array);
-		MemoryAllocator::Allocate(1024, AllocateType::Array);
-		MemoryAllocator::Allocate(4096, AllocateType::Unknown);
-		MemoryAllocator::DebugPrintStatistics();
-
 		// Events
 		EventBus::Subscribe<KeyPressEvent>(this, &Engine::OnKeyPressEvent);
 
+		m_Initialized = true;
+		m_Running = true;
+
+		DeltaTime lastDeltaTime = 0;
 		while (m_Running)
 		{
+			DeltaTime time = Timer::GetTimeSeconds();
+			DeltaTime dt = time - lastDeltaTime;
+			lastDeltaTime = time;
+
+			if (dt > 0)
+			{
+				OnUpdate(dt);
+				OnRender(dt);
+			}
+
 			m_Window->OnUpdate();
-			OnUpdate(1);
 			Input::OnUpdate();
 		}
 

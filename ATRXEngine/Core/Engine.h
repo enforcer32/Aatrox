@@ -2,6 +2,7 @@
 
 #include "ATRXEngine/Core/Window.h"
 #include "ATRXEngine/Events/KeyEvents.h"
+#include "ATRXEngine/Core/DeltaTime.h"
 
 namespace ATRX
 {
@@ -23,7 +24,8 @@ namespace ATRX
 		void OnShutdown();
 		virtual bool OnInit() = 0;
 		virtual void OnDestroy() = 0;
-		virtual void OnUpdate(double dt) = 0;
+		virtual void OnUpdate(DeltaTime dt) = 0;
+		virtual void OnRender(DeltaTime dt) = 0;
 
 		static Engine* Get();
 		const EngineProperties& GetProperties() const;
