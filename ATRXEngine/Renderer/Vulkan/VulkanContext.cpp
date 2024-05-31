@@ -33,6 +33,8 @@ namespace ATRX
 
 	bool VulkanContext::OnInit()
 	{
+		ATRX_LOG_INFO("ATRXVulkanContext->Initializing...");
+
 		VkApplicationInfo appInfo = { VK_STRUCTURE_TYPE_APPLICATION_INFO };
 		appInfo.apiVersion = VK_API_VERSION_1_2;
 		appInfo.pApplicationName = "Aatrox";
@@ -76,22 +78,25 @@ namespace ATRX
 			}
 		}
 
-
 		ATRX_LOG_INFO("ATRXVulkanContext->Initialized!");
-		return true;
+		return m_Initialized = true;
 	}
 
 	void VulkanContext::OnDestroy()
 	{
 		if (m_Initialized)
 		{
+			ATRX_LOG_INFO("ATRXVulkanContext->Destroying...");
+
 			if (m_DebugMessenger)
 			{
+				ATRX_LOG_INFO("ATRXVulkanContext->Destroying Debugger...");
 				PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_Instance, "vkDestroyDebugUtilsMessengerEXT");
 				if (!func)
 					ATRX_LOG_ERROR("ATRXVulkanContext->Failed to Retrieve Function Pointer: (vkDestroyDebugUtilsMessengerEXT)");
 				else
 					func(m_Instance, m_DebugMessenger, m_Allocator);
+				ATRX_LOG_INFO("ATRXVulkanContext->Destroyed Debugger!");
 			}
 
 			vkDestroyInstance(m_Instance, m_Allocator);
@@ -103,6 +108,7 @@ namespace ATRX
 
 	bool VulkanContext::InitVulkanExtensions()
 	{
+		ATRX_LOG_INFO("ATRXVulkanContext->Initializing Vulkan Extensions...");
 		// Vulkan Extensions
 		EnableVulkanExtension(VK_KHR_SURFACE_EXTENSION_NAME);
 #ifdef ATRX_ENGINE_DEBUG
@@ -111,13 +117,14 @@ namespace ATRX
 #ifdef ATRX_PLATFORM_WINDOWS
 		EnableVulkanExtension("VK_KHR_win32_surface");
 #endif // ATRX_PLATFORM_WINDOWS
+		ATRX_LOG_INFO("ATRXVulkanContext->Initialized Vulkan Extensions!");
 		return true;
 	}
 
 	bool VulkanContext::InitVulkanValidationLayers()
 	{
 #ifdef ATRX_ENGINE_DEBUG
-		ATRX_LOG_DEBUG("ATRXVulkanContext->Initializing Vulkan Validation Layers");
+		ATRX_LOG_INFO("ATRXVulkanContext->Initializing Vulkan Validation Layers...");
 		EnableVulkanValidationLayer("VK_LAYER_KHRONOS_validation");
 
 		ATRX_LOG_DEBUG("ATRXVulkanContext->Enumerating Validation Layers...");
@@ -159,12 +166,14 @@ namespace ATRX
 		}
 
 		m_ValidationLayerEnabled = true;
+		ATRX_LOG_INFO("ATRXVulkanContext->Initialized Vulkan Validation Layers!");
 #endif // ATRX_ENGINE_DEBUG
 		return true;
 	}
 
 	bool VulkanContext::InitVulkanDebugger()
 	{
+		ATRX_LOG_INFO("ATRXVulkanContext->Initializing Vulkan Debugger...");
 		uint32_t logSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
 
 		VkDebugUtilsMessengerCreateInfoEXT debugInfo = { VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT };
@@ -186,7 +195,7 @@ namespace ATRX
 			return false;
 		}
 
-		ATRX_LOG_INFO("ATRXVulkanContext->Vulkan Debugger Initialized!");
+		ATRX_LOG_INFO("ATRXVulkanContext->Initialized Vulkan Debugger!");
 		return true;
 	}
 

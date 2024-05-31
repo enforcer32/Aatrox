@@ -9,6 +9,7 @@ namespace ATRX
 
 	bool MemoryAllocator::OnInit()
 	{
+		ATRX_LOG_INFO("ATRXMemoryAllocator->Initializing...");
 		std::memset(&s_Stats, 0, sizeof(AllocationStats));
 		ATRX_LOG_INFO("ATRXMemoryAllocator->Initialized!");
 		return true;
@@ -16,6 +17,7 @@ namespace ATRX
 	
 	void MemoryAllocator::OnDestroy()
 	{
+		ATRX_LOG_INFO("ATRXMemoryAllocator->Destroying...");
 		ATRX_LOG_INFO("ATRXMemoryAllocator->Destroyed!");
 	}
 

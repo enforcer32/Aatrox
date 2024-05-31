@@ -7,6 +7,7 @@ namespace ATRX
 {
 	bool Mouse::OnInit()
 	{
+		ATRX_LOG_INFO("ATRXMouse->Initializing...");
 		std::memset(m_ButtonState, 0, sizeof(m_ButtonState));
 		m_ScrollState = 0;
 		std::memset(&m_Position, 0, sizeof(m_Position));
@@ -16,6 +17,7 @@ namespace ATRX
 
 	void Mouse::OnDestroy()
 	{
+		ATRX_LOG_INFO("ATRXMouse->Destroying...");
 		ATRX_LOG_INFO("ATRXMouse->Destroyed!");
 		m_Initialized = false;
 	}

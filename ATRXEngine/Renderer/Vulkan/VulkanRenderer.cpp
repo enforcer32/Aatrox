@@ -12,6 +12,7 @@ namespace ATRX
 
 	bool VulkanRenderer::OnInit()
 	{
+		ATRX_LOG_INFO("ATRXVulkanRenderer->Initializing...");
 		m_Context = std::make_shared<VulkanContext>();
 		if (!m_Context->OnInit())
 		{
@@ -27,6 +28,7 @@ namespace ATRX
 	{
 		if (m_Initialized)
 		{
+			ATRX_LOG_INFO("ATRXVulkanRenderer->Destroying...");
 			m_Context->OnDestroy();
 			ATRX_LOG_INFO("ATRXVulkanRenderer->Destroyed!");
 			m_Initialized = false;

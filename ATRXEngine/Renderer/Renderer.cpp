@@ -5,6 +5,7 @@ namespace ATRX
 {
 	bool Renderer::OnInit()
 	{
+		ATRX_LOG_INFO("ATRXRenderer->Initializing...");
 		m_RendererBackend = RendererBackend::CreateInstance();
 		if (!m_RendererBackend->OnInit())
 		{
@@ -20,6 +21,7 @@ namespace ATRX
 	{
 		if(m_Initialized)
 		{
+			ATRX_LOG_INFO("ATRXRenderer->Destroying...");
 			m_RendererBackend->OnDestroy();
 			ATRX_LOG_INFO("ATRXRenderer->Destroyed!");
 			m_Initialized = false;

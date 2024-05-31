@@ -7,6 +7,7 @@ namespace ATRX
 	
 	bool EventBus::OnInit()
 	{
+		ATRX_LOG_INFO("ATRXEventBus->Initializing...");
 		ATRX_LOG_INFO("ATRXEventBus->Initialized!");
 		return m_Initialized = true;
 	}
@@ -15,6 +16,7 @@ namespace ATRX
 	{
 		if (m_Initialized)
 		{
+			ATRX_LOG_INFO("ATRXEventBus->Destroying...");
 			m_Subscribers.clear();
 			ATRX_LOG_INFO("ATRXEventBus->Destroyed!");
 			m_Initialized = false;

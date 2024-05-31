@@ -93,6 +93,9 @@ namespace ATRX
 
 	bool WindowImplWin32::OnInit(const WindowProperties& props)
 	{
+		ATRX_LOG_INFO("ATRXWindow->Initializing...");
+		ATRX_LOG_INFO("ATRXWindowImplWin32->Initializing...");
+
 		m_WinPrivData.Name = props.Name;
 		m_WinPrivData.Width = props.Width;
 		m_WinPrivData.Height = props.Height;
@@ -128,6 +131,9 @@ namespace ATRX
 	{
 		if (m_Initialized)
 		{
+			ATRX_LOG_INFO("ATRXWindowImplWin32->Destroying...");
+			ATRX_LOG_INFO("ATRXWindow->Destroying...");
+
 			if (m_WinPrivData.HWnd)
 			{
 				UnregisterClass(m_WinPrivData.Name.c_str(), m_WinPrivData.HInstance);
@@ -187,6 +193,7 @@ namespace ATRX
 
 	bool WindowImplWin32::RegisterWindowClass()
 	{
+		ATRX_LOG_INFO("ATRXWindowImplWin32->Registering Window Class...");
 		HICON icon = LoadIconA(m_WinPrivData.HInstance, IDI_APPLICATION);
 
 		WNDCLASSEXA windowClass;
@@ -209,11 +216,13 @@ namespace ATRX
 			return false;
 		}
 
+		ATRX_LOG_INFO("ATRXWindowImplWin32->Registered Window Class!");
 		return true;
 	}
 
 	bool WindowImplWin32::CreateWindowContext()
 	{
+		ATRX_LOG_INFO("ATRXWindowImplWin32->Creating Window Context...");
 		uint32_t windowWidth = m_WinPrivData.Width, windowHeight = m_WinPrivData.Height, windowX = m_WinPrivData.XPos, windowY = m_WinPrivData.YPos;
 		uint32_t windowStyle = WS_CAPTION | WS_OVERLAPPED | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_THICKFRAME;
 		uint32_t windowStyleEx = WS_EX_APPWINDOW;
@@ -234,6 +243,7 @@ namespace ATRX
 		}
 
 		m_WinPrivData.HWnd = handle;
+		ATRX_LOG_INFO("ATRXWindowImplWin32->Created! Window Context!");
 		return true;
 	}
 

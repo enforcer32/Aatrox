@@ -11,6 +11,7 @@ namespace ATRX
 
 	bool Timer::OnInit()
 	{
+		ATRX_LOG_INFO("ATRXTimer->Initializing...");
 		LARGE_INTEGER freq;
 		QueryPerformanceFrequency(&freq);
 		clockFreq = 1.0 / (double)freq.QuadPart;
@@ -21,6 +22,7 @@ namespace ATRX
 
 	void Timer::OnDestroy()
 	{
+		ATRX_LOG_INFO("ATRXTimer->Destroying...");
 		ATRX_LOG_INFO("ATRXTimer->Destroyed!");
 	}
 

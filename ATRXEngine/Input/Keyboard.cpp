@@ -7,6 +7,7 @@ namespace ATRX
 {
 	bool Keyboard::OnInit()
 	{
+		ATRX_LOG_INFO("ATRXKeyboard->Initializing...");
 		Reset();
 		ATRX_LOG_INFO("ATRXKeyboard->Initialized!");
 		return m_Initialized = true;
@@ -14,6 +15,7 @@ namespace ATRX
 
 	void Keyboard::OnDestroy()
 	{
+		ATRX_LOG_INFO("ATRXKeyboard->Destroying...");
 		ATRX_LOG_INFO("ATRXKeyboard->Destroyed!");
 		m_Initialized = false;
 	}

@@ -18,6 +18,7 @@ namespace ATRX
 
 		Logger::OnInit();
 		Timer::OnInit();
+		ATRX_LOG_INFO("ATRXEngine->Initializing...");
 
 		if(!MemoryAllocator::OnInit())
 			ATRX_LOG_CRITICAL("ATRXEngine->Failed to Initialize MemoryAllocator!");
@@ -35,12 +36,14 @@ namespace ATRX
 		m_Renderer = std::make_shared<Renderer>();
 		if(!m_Renderer->OnInit())
 			ATRX_LOG_CRITICAL("ATRXEngine->Failed to Initialize Renderer!");
+		ATRX_LOG_INFO("ATRXEngine->Initialized...");
 	}
 
 	Engine::~Engine()
 	{
 		if (m_Initialized)
 		{
+			ATRX_LOG_INFO("ATRXEngine->Destroying...");
 			m_Renderer->OnDestroy();
 			Input::OnDestroy();
 			EventBus::OnDestroy();
@@ -48,6 +51,7 @@ namespace ATRX
 			MemoryAllocator::OnDestroy();
 			Timer::OnDestroy();
 			Logger::OnDestroy();
+			ATRX_LOG_INFO("ATRXEngine->Destroyed!");
 		}
 	}
 

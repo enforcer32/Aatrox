@@ -12,6 +12,7 @@ namespace ATRX
 
 	bool Input::OnInit()
 	{
+		ATRX_LOG_INFO("ATRXInput->Initializing...");
 		if (!m_Keyboard.OnInit())
 		{
 			ATRX_LOG_ERROR("ATRXInput->Error Initializing ATRXKeyboard!");
@@ -32,6 +33,7 @@ namespace ATRX
 	{
 		if (m_Initialized)
 		{
+			ATRX_LOG_INFO("ATRXInput->Destroying...");
 			m_Mouse.OnDestroy();
 			m_Keyboard.OnDestroy();
 			ATRX_LOG_INFO("ATRXInput->Destroyed!");
