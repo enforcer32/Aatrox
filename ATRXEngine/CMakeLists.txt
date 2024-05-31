@@ -29,9 +29,15 @@ file(GLOB_RECURSE ATRXEngineSources
 
 file(GLOB_RECURSE ATRXEngineRendererSources
 	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/RendererBackend.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/RendererBackend.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/Renderer.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/Renderer.cpp"
+)
+
+file(GLOB_RECURSE ATRXEngineVulkanRendererSources
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/Vulkan/VulkanRenderer.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/Vulkan/VulkanRenderer.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/Vulkan/VulkanContext.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/Vulkan/VulkanContext.cpp"
 )
 
 if(WIN32)
@@ -44,9 +50,11 @@ endif(WIN32)
 
 add_definitions(-DATRX_ENGINE_BUILD -DATRX_ENGINE_DEBUG)
 
-set(ATRXEngineSources ${ATRXEngineSources} ${ATRXEnginePlatformSources} ${ATRXEngineRendererSources})
+set(ATRXEngineSources ${ATRXEngineSources} ${ATRXEnginePlatformSources} ${ATRXEngineRendererSources} ${ATRXEngineVulkanRendererSources})
 add_library(${AATROX_ENGINE_TARGET_NAME} SHARED ${ATRXEngineSources})
 
 target_include_directories(${AATROX_ENGINE_TARGET_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../")
+target_include_directories(${AATROX_ENGINE_TARGET_NAME} PRIVATE ${VULKAN_INCLUDE_DIRS})
 
-TARGET_LINK_LIBRARIES(${AATROX_ENGINE_TARGET_NAME} PUBLIC spdlog)
+target_link_libraries(${AATROX_ENGINE_TARGET_NAME} PUBLIC spdlog)
+target_link_libraries(${AATROX_ENGINE_TARGET_NAME} PRIVATE Vulkan::Vulkan)

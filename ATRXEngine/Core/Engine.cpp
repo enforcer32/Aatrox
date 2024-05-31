@@ -32,6 +32,7 @@ namespace ATRX
 		if (!Input::OnInit())
 			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize Input!");
 
+		m_Renderer = std::make_shared<Renderer>();
 		if(!m_Renderer->OnInit())
 			ATRX_LOG_CRITICAL("ATRXEngine Failed to Initialize Renderer!");
 	}

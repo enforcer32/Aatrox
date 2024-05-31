@@ -17,6 +17,8 @@ set(AATROX_SANDBOX_TARGET_NAME ATRXSandbox)
 include(FetchContent)
 
 # Libraries
+find_package(Vulkan REQUIRED)
+
 FetchContent_Declare(
         spdlog
         GIT_REPOSITORY "https://github.com/gabime/spdlog"

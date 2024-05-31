@@ -33,9 +33,6 @@ namespace ATRX
 
 		inline static RendererBackendAPI GetBackendAPI() { return s_BackendAPI; }
 	
-	protected:
-		inline static void SetBackendAPI(RendererBackendAPI api) { s_BackendAPI = api; }
-
 	private:
 		static RendererBackendAPI s_BackendAPI;
 	};
