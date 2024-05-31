@@ -1,4 +1,5 @@
 #include "ATRXEngine/Core/Timer.h"
+#include "ATRXEngine/Core/Logger.h"
 
 #include <cstdint>
 #include <Windows.h>
@@ -14,11 +15,13 @@ namespace ATRX
 		QueryPerformanceFrequency(&freq);
 		clockFreq = 1.0 / (double)freq.QuadPart;
 		QueryPerformanceCounter(&startTime);
+		ATRX_LOG_INFO("ATRXTimer->Initialized!");
 		return true;
 	}
 
 	void Timer::OnDestroy()
 	{
+		ATRX_LOG_INFO("ATRXTimer->Destroyed!");
 	}
 
 	double Timer::GetTimeSeconds()

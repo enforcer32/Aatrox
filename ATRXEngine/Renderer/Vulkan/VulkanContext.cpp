@@ -22,10 +22,11 @@ namespace ATRX
 		VkResult res = vkCreateInstance(&instanceInfo, m_Allocator, &m_Instance);
 		if (res != VK_SUCCESS)
 		{
-			ATRX_LOG_ERROR("VulkanContext->vkCreateInstance Failed: {}", (int)res);
+			ATRX_LOG_ERROR("ATRXVulkanContext->Error vkCreateInstance: {}!", (int)res);
 			return false;
 		}
 
+		ATRX_LOG_INFO("ATRXVulkanContext->Initialized!");
 		return true;
 	}
 
@@ -33,6 +34,7 @@ namespace ATRX
 	{
 		if (m_Initialized)
 		{
+			ATRX_LOG_INFO("ATRXVulkanContext->Destroyed!");
 			m_Initialized = false;
 		}
 	}

@@ -1,4 +1,5 @@
 #include "ATRXEngine/Renderer/Renderer.h"
+#include "ATRXEngine/Core/Logger.h"
 
 namespace ATRX
 {
@@ -6,7 +7,12 @@ namespace ATRX
 	{
 		m_RendererBackend = RendererBackend::CreateInstance();
 		if (!m_RendererBackend->OnInit())
+		{
+			ATRX_LOG_ERROR("ATRXRenderer->Error Initializing RendererBackend!");
 			return false;
+		}
+
+		ATRX_LOG_INFO("ATRXRenderer->Initialized!");
 		return m_Initialized = true;
 	}
 
@@ -15,6 +21,7 @@ namespace ATRX
 		if(m_Initialized)
 		{
 			m_RendererBackend->OnDestroy();
+			ATRX_LOG_INFO("ATRXRenderer->Destroyed!");
 			m_Initialized = false;
 		}
 	}

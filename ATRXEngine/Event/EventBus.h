@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ATRXEngine/Event/EventCallback.h"
+#include "ATRXEngine/Core/Logger.h"
 
 #include <map>
 #include <typeindex>
@@ -19,6 +20,7 @@ namespace ATRX
 		{
 			std::shared_ptr<IEventCallback> subscriber = std::make_shared<EventCallback<TEvent, TOwner>>(owner, callbackFunction);
 			m_Subscribers[typeid(TEvent)].push_back(subscriber);
+			ATRX_LOG_DEBUG("ATRXEventBus->Subscribed({} to Event {})!", typeid(TOwner).name(), typeid(TEvent).name());
 		}
 
 		template<typename TEvent, typename TOwner>
@@ -31,6 +33,7 @@ namespace ATRX
 				if (sub->GetOwner() == owner)
 				{
 					m_Subscribers[typeid(TEvent)].remove(sub);
+					ATRX_LOG_DEBUG("ATRXEventBus->Unsubscribed({} from Event {})!", typeid(TOwner).name(), typeid(TEvent).name());
 					break;
 				}
 			}

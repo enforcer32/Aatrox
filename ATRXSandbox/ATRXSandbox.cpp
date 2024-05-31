@@ -15,12 +15,13 @@ namespace ATRX
 
 		virtual bool OnInit() override
 		{
-			ATRX_LOG_INFO("Initializing ATRXSandbox");
+			ATRX_LOG_INFO("ATRXSandbox->Initialized!");
 			return true;
 		}
 
 		virtual void OnDestroy() override
 		{
+			ATRX_LOG_INFO("ATRXSandbox->Destroyed!");
 		}
 
 		virtual void OnUpdate(DeltaTime dt) override

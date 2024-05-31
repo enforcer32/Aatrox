@@ -10,11 +10,13 @@ namespace ATRX
 	bool MemoryAllocator::OnInit()
 	{
 		std::memset(&s_Stats, 0, sizeof(AllocationStats));
+		ATRX_LOG_INFO("ATRXMemoryAllocator->Initialized!");
 		return true;
 	}
 	
 	void MemoryAllocator::OnDestroy()
 	{
+		ATRX_LOG_INFO("ATRXMemoryAllocator->Destroyed!");
 	}
 
 	const AllocationStats& MemoryAllocator::GetStatistics()
@@ -26,12 +28,12 @@ namespace ATRX
 	{
 #ifdef ATRX_ENGINE_DEBUG
 		std::ostringstream oss;
-		oss << "MemoryManager->Statistics Start:\n";
+		oss << "ATRXMemoryAllocator->Statistics Start:\n";
 		oss << "Total Allocated: " << s_Stats.TotalAllocated << "\n";
 		oss << "Total Freed: " << s_Stats.TotalAllocated << "\n";
 		for (size_t i = 0; i < (size_t)AllocateType::AllocateTypeSize; i++)
 			oss << "(" << AllocateTypeStr[i] << ")->Allocated: " << s_Stats.Allocations[i] << " Bytes\n";
-		oss << "MemoryManager->Statistics End:\n";
+		oss << "ATRXMemoryAllocator->Statistics End:\n";
 		ATRX_LOG_INFO(oss.str());
 #endif // ATRX_ENGINE_DEBUG
 	}
@@ -39,7 +41,7 @@ namespace ATRX
 	void* MemoryAllocator::Allocate(size_t size, AllocateType type)
 	{
 		if (type == AllocateType::Unknown)
-			ATRX_LOG_WARN("MemoryManager->Allocating {} bytes Type Unknown!", size);
+			ATRX_LOG_WARN("ATRXMemoryAllocator->Allocating {} bytes Type Unknown!", size);
 
 		s_Stats.TotalAllocated += size;
 		s_Stats.Allocations[(size_t)type] += size;
@@ -52,7 +54,7 @@ namespace ATRX
 	void MemoryAllocator::Free(void* block, size_t size, AllocateType type)
 	{
 		if (type == AllocateType::Unknown)
-			ATRX_LOG_WARN("MemoryManager->Freeing {} bytes Type Unknown!", size);
+			ATRX_LOG_WARN("ATRXMemoryAllocator->Freeing {} bytes Type Unknown!", size);
 
 		s_Stats.TotalAllocated -= size;
 		s_Stats.Allocations[(size_t)type] -= size;

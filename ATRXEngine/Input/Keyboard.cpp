@@ -1,4 +1,6 @@
 #include "ATRXEngine/Input/Keyboard.h"
+#include "ATRXEngine/Core/Logger.h"
+
 #include <cstring>
 
 namespace ATRX
@@ -6,11 +8,13 @@ namespace ATRX
 	bool Keyboard::OnInit()
 	{
 		Reset();
+		ATRX_LOG_INFO("ATRXKeyboard->Initialized!");
 		return m_Initialized = true;
 	}
 
 	void Keyboard::OnDestroy()
 	{
+		ATRX_LOG_INFO("ATRXKeyboard->Destroyed!");
 		m_Initialized = false;
 	}
 

@@ -1,4 +1,5 @@
 #include "ATRXEngine/Input/Mouse.h"
+#include "ATRXEngine/Core/Logger.h"
 
 #include <cstring>
 
@@ -6,14 +7,16 @@ namespace ATRX
 {
 	bool Mouse::OnInit()
 	{
-		memset(m_ButtonState, 0, sizeof(m_ButtonState));
+		std::memset(m_ButtonState, 0, sizeof(m_ButtonState));
 		m_ScrollState = 0;
-		memset(&m_Position, 0, sizeof(m_Position));
+		std::memset(&m_Position, 0, sizeof(m_Position));
+		ATRX_LOG_INFO("ATRXMouse->Initialized!");
 		return m_Initialized = true;
 	}
 
 	void Mouse::OnDestroy()
 	{
+		ATRX_LOG_INFO("ATRXMouse->Destroyed!");
 		m_Initialized = false;
 	}
 
@@ -26,9 +29,9 @@ namespace ATRX
 
 	void Mouse::Reset()
 	{
-		memset(m_ButtonState, 0, sizeof(m_ButtonState));
+		std::memset(m_ButtonState, 0, sizeof(m_ButtonState));
 		m_ScrollState = 0;
-		memset(&m_Position, 0, sizeof(m_Position));
+		std::memset(&m_Position, 0, sizeof(m_Position));
 	}
 
 	bool Mouse::IsButtonUp(MouseCode button) const

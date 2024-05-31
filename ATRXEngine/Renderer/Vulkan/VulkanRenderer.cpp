@@ -1,4 +1,5 @@
 #include "ATRXEngine/Renderer/Vulkan/VulkanRenderer.h"
+#include "ATRXEngine/Core/Logger.h"
 
 namespace ATRX
 {
@@ -13,8 +14,12 @@ namespace ATRX
 	{
 		m_Context = std::make_shared<VulkanContext>();
 		if (!m_Context->OnInit())
+		{
+			ATRX_LOG_ERROR("ATRXVulkanRenderer->Error Initializing VulkanContext");
 			return false;
+		}
 
+		ATRX_LOG_INFO("ATRXVulkanRenderer->Initialized!");
 		return m_Initialized = true;
 	}
 
@@ -23,6 +28,7 @@ namespace ATRX
 		if (m_Initialized)
 		{
 			m_Context->OnDestroy();
+			ATRX_LOG_INFO("ATRXVulkanRenderer->Destroyed!");
 			m_Initialized = false;
 		}
 	}

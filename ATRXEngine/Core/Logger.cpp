@@ -18,10 +18,12 @@ namespace ATRX
 		sinks[0] = std::make_shared<spdlog::sinks::ostream_sink_st>(s_Stream);
 		std::vector<spdlog::sink_ptr>& sinks2{ s_Logger->sinks() };
 		sinks2[0] = std::make_shared<spdlog::sinks::ostream_sink_st>(s_Stream);*/
+		ATRX_LOG_INFO("ATRXLogger->Initialized!");
 	}
 
 	void Logger::OnDestroy()
 	{
+		ATRX_LOG_INFO("ATRXLogger->Destroyed!");
 	}
 
 	void Logger::SaveLastLog()

@@ -2,6 +2,7 @@
 #include "ATRXEngine/Event/EventBus.h"
 #include "ATRXEngine/Events/KeyEvents.h"
 #include "ATRXEngine/Events/MouseEvents.h"
+#include "ATRXEngine/Core/Logger.h"
 
 namespace ATRX
 {
@@ -11,8 +12,19 @@ namespace ATRX
 
 	bool Input::OnInit()
 	{
-		if (!m_Keyboard.OnInit()) return false;
-		if (!m_Mouse.OnInit()) return false;
+		if (!m_Keyboard.OnInit())
+		{
+			ATRX_LOG_ERROR("ATRXInput->Error Initializing ATRXKeyboard!");
+			return false;
+		}
+
+		if (!m_Mouse.OnInit())
+		{
+			ATRX_LOG_ERROR("ATRXInput->Error Initializing ATRXMouse!");
+			return false;
+		}
+
+		ATRX_LOG_INFO("ATRXInput->Initialized!");
 		return m_Initialized = true;
 	}
 
@@ -22,6 +34,7 @@ namespace ATRX
 		{
 			m_Mouse.OnDestroy();
 			m_Keyboard.OnDestroy();
+			ATRX_LOG_INFO("ATRXInput->Destroyed!");
 			m_Initialized = false;
 		}
 	}

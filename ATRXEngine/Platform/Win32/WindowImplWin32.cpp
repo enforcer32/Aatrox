@@ -100,10 +100,27 @@ namespace ATRX
 		m_WinPrivData.YPos = props.YPos;
 		m_WinPrivData.VSync = props.VSync;
 		m_WinPrivData.HInstance = GetModuleHandleA(0);
-		if (!RegisterWindowClass()) return false;
-		if (!CreateWindowContext()) return false;
-		if (!ShowTheWindow()) return false;
-		ATRX_LOG_INFO("WindowImplWin32 Initialized!");
+
+		if (!RegisterWindowClass())
+		{
+			ATRX_LOG_ERROR("ATRXWindowImplWin32->Error RegisterWindowClass!");
+			return false;
+		}
+
+		if (!CreateWindowContext())
+		{
+			ATRX_LOG_ERROR("ATRXWindowImplWin32->Error CreateWindowContext!");
+			return false;
+		}
+
+		if (!ShowTheWindow())
+		{
+			ATRX_LOG_ERROR("ATRXWindowImplWin32->Error ShowTheWindow!");
+			return false;
+		}
+
+		ATRX_LOG_INFO("ATRXWindowImplWin32->Initialized!");
+		ATRX_LOG_INFO("ATRXWindow->Initialized!");
 		return m_Initialized = true;
 	}
 
@@ -118,6 +135,8 @@ namespace ATRX
 				m_WinPrivData.HWnd = NULL;
 			}
 
+			ATRX_LOG_INFO("ATRXWindowImplWin32->Destroyed!");
+			ATRX_LOG_INFO("ATRXWindow->Destroyed!");
 			m_Initialized = false;
 		}
 	}
