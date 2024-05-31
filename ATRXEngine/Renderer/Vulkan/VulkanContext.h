@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
+#include <vector>
 
 namespace ATRX
 {
@@ -11,8 +12,19 @@ namespace ATRX
 		void OnDestroy();
 
 	private:
+		bool InitVulkanExtensions();
+		bool InitVulkanValidationLayers();
+		bool InitVulkanDebugger();
+		void EnableVulkanExtension(const char* extension);
+		void EnableVulkanValidationLayer(const char* validationLayer);
+
+	private:
 		bool m_Initialized = false;
+		bool m_ValidationLayerEnabled = false;
 		VkInstance m_Instance;
 		VkAllocationCallbacks* m_Allocator = nullptr;
+		VkDebugUtilsMessengerEXT m_DebugMessenger = nullptr;
+		std::vector<const char*> m_VulkanExtensions;
+		std::vector<const char*> m_VulkanValidationLayers;
 	};
 }
