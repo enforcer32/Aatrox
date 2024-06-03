@@ -27,19 +27,6 @@ file(GLOB_RECURSE ATRXEngineSources
 	"${CMAKE_CURRENT_SOURCE_DIR}/Input/Mouse.cpp"
 )
 
-file(GLOB_RECURSE ATRXEngineRendererSources
-	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/RendererBackend.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/Renderer.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/Renderer.cpp"
-)
-
-file(GLOB_RECURSE ATRXEngineVulkanRendererSources
-	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/Vulkan/VulkanRenderer.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/Vulkan/VulkanRenderer.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/Vulkan/VulkanContext.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/Vulkan/VulkanContext.cpp"
-)
-
 if(WIN32)
 	file(GLOB_RECURSE ATRXEnginePlatformSources
 		"${CMAKE_CURRENT_SOURCE_DIR}/Platform/Win32/WindowImplWin32.h"
@@ -48,9 +35,26 @@ if(WIN32)
 	)
 endif(WIN32)
 
+file(GLOB_RECURSE ATRXEngineRendererAPISources
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererBackend.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererContext.h"
+)
+
+file(GLOB_RECURSE ATRXEngineRendererSources
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/Renderer.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/Renderer.cpp"
+)
+
+file(GLOB_RECURSE ATRXEngineRHIVulkanRendererSources
+	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanRenderer.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanRenderer.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanContext.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanContext.cpp"
+)
+
 add_definitions(-DATRX_ENGINE_BUILD -DATRX_ENGINE_DEBUG)
 
-set(ATRXEngineSources ${ATRXEngineSources} ${ATRXEnginePlatformSources} ${ATRXEngineRendererSources} ${ATRXEngineVulkanRendererSources})
+set(ATRXEngineSources ${ATRXEngineSources} ${ATRXEnginePlatformSources} ${ATRXEngineRendererAPISources} ${ATRXEngineRendererSources} ${ATRXEngineRHIVulkanRendererSources})
 add_library(${AATROX_ENGINE_TARGET_NAME} SHARED ${ATRXEngineSources})
 
 target_include_directories(${AATROX_ENGINE_TARGET_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../")

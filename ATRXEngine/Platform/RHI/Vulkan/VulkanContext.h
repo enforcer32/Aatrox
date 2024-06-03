@@ -1,15 +1,17 @@
 #pragma once
 
+#include "ATRXEngine/Renderer/API/RendererContext.h"
+
 #include <vulkan/vulkan.h>
 #include <vector>
 
 namespace ATRX
 {
-	class VulkanContext
+	class VulkanContext : public RendererContext
 	{
 	public:
-		bool OnInit();
-		void OnDestroy();
+		virtual bool OnInit() override;
+		virtual void OnDestroy() override;
 
 	private:
 		bool InitVulkanExtensions();

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ATRXEngine/Renderer/RendererBackend.h"
-#include "ATRXEngine/Renderer/Vulkan/VulkanContext.h"
+#include "ATRXEngine/Renderer/API/RendererBackend.h"
+#include "ATRXEngine/Platform/RHI/Vulkan/VulkanContext.h"
 
 namespace ATRX
 {
