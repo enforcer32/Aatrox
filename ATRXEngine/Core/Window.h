@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ATRXEngine/Core/Typedef.h"
+#include "ATRXEngine/Renderer/Renderer.h"
 
 #include <string>
 #include <memory>
@@ -34,5 +35,6 @@ namespace ATRX
 		virtual uint32_t GetWidth() const = 0;
 		virtual uint32_t GetHeight() const = 0;
 		virtual const void* GetNativeWindow() const = 0;
+		virtual std::shared_ptr<RendererSurface> GetSurface(const std::shared_ptr<Renderer>& renderer) const = 0;
 	};
 }

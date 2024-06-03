@@ -1,19 +1,37 @@
 #pragma once
 
-#include "ATRXEngine/Renderer/API/RendererBackend.h"
+#include "ATRXEngine/Core/DeltaTime.h"
+#include "ATRXEngine/Renderer/API/RendererContext.h"
+#include "ATRXEngine/Renderer/API/RendererSurface.h"
 
 namespace ATRX
 {
+	struct RenderPacket
+	{
+		DeltaTime DeltaTime;
+	};
+
 	class Renderer
 	{
 	public:
-		bool OnInit();
+		bool OnInit(RendererBackendAPI api);
 		void OnDestroy();
 
 		bool DrawFrame(RenderPacket packet);
+		void SetTargetSurface(const std::shared_ptr<RendererSurface> surface);
+
+		RendererBackendAPI GetBackendAPI() const;
+		std::shared_ptr<RendererContext> GetContext() const;
+		std::shared_ptr<RendererSurface> GetSurface() const;
+
+	private:
+		bool BeginFrame(DeltaTime dt);
+		bool EndFrame();
 
 	private:
 		bool m_Initialized = false;
-		std::unique_ptr<RendererBackend> m_RendererBackend;
+		RendererBackendAPI m_BackendAPI;
+		std::shared_ptr<RendererContext> m_Context;
+		std::shared_ptr<RendererSurface> m_Surface;
 	};
 }

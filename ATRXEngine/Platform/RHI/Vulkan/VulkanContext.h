@@ -13,6 +13,9 @@ namespace ATRX
 		virtual bool OnInit() override;
 		virtual void OnDestroy() override;
 
+		VkInstance GetInstance() const;
+		VkAllocationCallbacks* GetAllocator() const;
+
 	private:
 		bool InitVulkanExtensions();
 		bool InitVulkanValidationLayers();

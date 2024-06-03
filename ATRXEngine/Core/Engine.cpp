@@ -34,8 +34,11 @@ namespace ATRX
 			ATRX_LOG_CRITICAL("ATRXEngine->Failed to Initialize Input!");
 
 		m_Renderer = std::make_shared<Renderer>();
-		if(!m_Renderer->OnInit())
+		if(!m_Renderer->OnInit(RendererBackendAPI::Vulkan))
 			ATRX_LOG_CRITICAL("ATRXEngine->Failed to Initialize Renderer!");
+
+		m_Renderer->SetTargetSurface(m_Window->GetSurface(m_Renderer));
+
 		ATRX_LOG_INFO("ATRXEngine->Initialized...");
 	}
 

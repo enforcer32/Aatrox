@@ -191,6 +191,17 @@ namespace ATRX
 		return m_NativeWindow;
 	}
 
+	std::shared_ptr<RendererSurface> WindowImplWin32::GetSurface(const std::shared_ptr<Renderer>& renderer) const
+	{
+		std::shared_ptr<RendererSurface> surface = RendererSurface::CreateInstance(renderer->GetBackendAPI());
+		if (!surface->OnInit(renderer->GetContext(), m_WinPrivData.HInstance, m_WinPrivData.HWnd))
+		{
+			ATRX_LOG_ERROR("ATRXWindowImplWin32->Error GetSurface");
+			return nullptr;
+		}
+		return surface;
+	}
+
 	bool WindowImplWin32::RegisterWindowClass()
 	{
 		ATRX_LOG_INFO("ATRXWindowImplWin32->Registering Window Class...");

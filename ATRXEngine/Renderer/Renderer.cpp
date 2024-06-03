@@ -1,15 +1,21 @@
 #include "ATRXEngine/Renderer/Renderer.h"
 #include "ATRXEngine/Core/Logger.h"
 
+// Vulkan
+#include "ATRXEngine/Platform/RHI/Vulkan/VulkanContext.h"
+#include "ATRXEngine/Platform/RHI/Vulkan/VulkanSurface.h"
+
 namespace ATRX
 {
-	bool Renderer::OnInit()
+	bool Renderer::OnInit(RendererBackendAPI api)
 	{
 		ATRX_LOG_INFO("ATRXRenderer->Initializing...");
-		m_RendererBackend = RendererBackend::CreateInstance();
-		if (!m_RendererBackend->OnInit())
+		m_BackendAPI = api;
+
+		m_Context = RendererContext::CreateInstance(m_BackendAPI);
+		if (!m_Context->OnInit())
 		{
-			ATRX_LOG_ERROR("ATRXRenderer->Error Initializing RendererBackend!");
+			ATRX_LOG_ERROR("ATRXRenderer->Error Initializing VulkanContext!");
 			return false;
 		}
 
@@ -22,7 +28,9 @@ namespace ATRX
 		if(m_Initialized)
 		{
 			ATRX_LOG_INFO("ATRXRenderer->Destroying...");
-			m_RendererBackend->OnDestroy();
+			if (m_Surface)
+				m_Surface->OnDestroy();
+			m_Context->OnDestroy();
 			ATRX_LOG_INFO("ATRXRenderer->Destroyed!");
 			m_Initialized = false;
 		}
@@ -30,10 +38,43 @@ namespace ATRX
 
 	bool Renderer::DrawFrame(RenderPacket packet)
 	{
-		if (m_RendererBackend->BeginFrame(packet.DeltaTime)) {
-			if (!m_RendererBackend->EndFrame())
+		if (BeginFrame(packet.DeltaTime)) {
+			if (!EndFrame())
 				return false;
 		}
+		return true;
+	}
+
+	void Renderer::SetTargetSurface(const std::shared_ptr<RendererSurface> surface)
+	{
+		if (surface == nullptr)
+			ATRX_LOG_ERROR("ATRXRenderer->SetTargetSurface Invalid Surface!");
+		else
+			m_Surface = surface;
+	}
+
+	RendererBackendAPI Renderer::GetBackendAPI() const
+	{
+		return m_BackendAPI;
+	}
+
+	std::shared_ptr<RendererContext> Renderer::GetContext() const
+	{
+		return m_Context;
+	}
+
+	std::shared_ptr<RendererSurface> Renderer::GetSurface() const
+	{
+		return m_Surface;
+	}
+
+	bool Renderer::BeginFrame(DeltaTime dt)
+	{
+		return true;
+	}
+
+	bool Renderer::EndFrame()
+	{
 		return true;
 	}
 }

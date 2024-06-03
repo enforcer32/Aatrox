@@ -22,6 +22,7 @@ namespace ATRX
 		virtual uint32_t GetWidth() const override;
 		virtual uint32_t GetHeight() const override;
 		virtual const void* GetNativeWindow() const override;
+		virtual std::shared_ptr<RendererSurface> GetSurface(const std::shared_ptr<Renderer>& renderer) const override;
 
 	private:
 		bool RegisterWindowClass();

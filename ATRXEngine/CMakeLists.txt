@@ -36,8 +36,10 @@ if(WIN32)
 endif(WIN32)
 
 file(GLOB_RECURSE ATRXEngineRendererAPISources
-	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererBackend.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererContext.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererContext.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererSurface.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererSurface.cpp"
 )
 
 file(GLOB_RECURSE ATRXEngineRendererSources
@@ -46,10 +48,10 @@ file(GLOB_RECURSE ATRXEngineRendererSources
 )
 
 file(GLOB_RECURSE ATRXEngineRHIVulkanRendererSources
-	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanRenderer.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanRenderer.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanContext.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanContext.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanSurface.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanSurface.cpp"
 )
 
 add_definitions(-DATRX_ENGINE_BUILD -DATRX_ENGINE_DEBUG)

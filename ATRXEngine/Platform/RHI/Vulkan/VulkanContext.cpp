@@ -106,6 +106,16 @@ namespace ATRX
 		}
 	}
 
+	VkInstance VulkanContext::GetInstance() const
+	{
+		return m_Instance;
+	}
+
+	VkAllocationCallbacks* VulkanContext::GetAllocator() const
+	{
+		return m_Allocator;
+	}
+
 	bool VulkanContext::InitVulkanExtensions()
 	{
 		ATRX_LOG_INFO("ATRXVulkanContext->Initializing Vulkan Extensions...");
