@@ -3,6 +3,7 @@
 #include "ATRXEngine/Core/DeltaTime.h"
 #include "ATRXEngine/Renderer/API/RendererContext.h"
 #include "ATRXEngine/Renderer/API/RendererSurface.h"
+#include "ATRXEngine/Renderer/API/RendererDevice.h"
 
 namespace ATRX
 {
@@ -33,5 +34,6 @@ namespace ATRX
 		RendererBackendAPI m_BackendAPI;
 		std::shared_ptr<RendererContext> m_Context;
 		std::shared_ptr<RendererSurface> m_Surface;
+		std::shared_ptr<RendererDevice> m_PhysicalDevice;
 	};
 }

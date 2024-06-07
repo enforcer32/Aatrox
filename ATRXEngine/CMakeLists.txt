@@ -40,6 +40,8 @@ file(GLOB_RECURSE ATRXEngineRendererAPISources
 	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererContext.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererSurface.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererSurface.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererDevice.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererDevice.cpp"
 )
 
 file(GLOB_RECURSE ATRXEngineRendererSources
@@ -52,6 +54,8 @@ file(GLOB_RECURSE ATRXEngineRHIVulkanRendererSources
 	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanContext.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanSurface.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanSurface.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanDevice.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanDevice.cpp"
 )
 
 add_definitions(-DATRX_ENGINE_BUILD -DATRX_ENGINE_DEBUG)
@@ -63,4 +67,4 @@ target_include_directories(${AATROX_ENGINE_TARGET_NAME} PRIVATE "${CMAKE_CURRENT
 target_include_directories(${AATROX_ENGINE_TARGET_NAME} PRIVATE ${VULKAN_INCLUDE_DIRS})
 
 target_link_libraries(${AATROX_ENGINE_TARGET_NAME} PUBLIC spdlog)
-target_link_libraries(${AATROX_ENGINE_TARGET_NAME} PRIVATE Vulkan::Vulkan)
+target_link_libraries(${AATROX_ENGINE_TARGET_NAME} PUBLIC Vulkan::Vulkan) # TMP->SWITCH BACK TO PRIVATE

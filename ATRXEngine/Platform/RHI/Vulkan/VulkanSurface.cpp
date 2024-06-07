@@ -42,7 +42,9 @@ namespace ATRX
 		{
 			ATRX_LOG_INFO("ATRXVulkanSurface->Destroying...");
 			vkDestroySurfaceKHR(m_Context->GetInstance(), m_Surface, m_Context->GetAllocator());
+			m_Context = nullptr;
 			ATRX_LOG_INFO("ATRXVulkanSurface->Destroyed!");
+			m_Initialized = false;
 		}
 	}
 

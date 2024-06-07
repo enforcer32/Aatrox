@@ -15,7 +15,14 @@ namespace ATRX
 		m_Context = RendererContext::CreateInstance(m_BackendAPI);
 		if (!m_Context->OnInit())
 		{
-			ATRX_LOG_ERROR("ATRXRenderer->Error Initializing VulkanContext!");
+			ATRX_LOG_ERROR("ATRXRenderer->Error Initializing RendererContext!");
+			return false;
+		}
+
+		m_PhysicalDevice = RendererDevice::CreateInstance(api);
+		if (!m_PhysicalDevice->OnInit(m_Context))
+		{
+			ATRX_LOG_ERROR("ATRXRenderer->Error Initializing VulkanPhysicalDevice!");
 			return false;
 		}
 
@@ -30,6 +37,7 @@ namespace ATRX
 			ATRX_LOG_INFO("ATRXRenderer->Destroying...");
 			if (m_Surface)
 				m_Surface->OnDestroy();
+			m_PhysicalDevice->OnDestroy();
 			m_Context->OnDestroy();
 			ATRX_LOG_INFO("ATRXRenderer->Destroyed!");
 			m_Initialized = false;
