@@ -3,231 +3,71 @@
 
 namespace ATRX
 {
-	bool VulkanPhysicalDevice::OnInit(const std::shared_ptr<RendererContext>& context) 
+	bool VulkanDevice::OnInit(const std::shared_ptr<RendererContext>& context)
 	{
-		ATRX_LOG_INFO("ATRXVulkanPhysicalDevice->Initializing VulkanPhysicalDevice...");
+		ATRX_LOG_INFO("ATRXVulkanDevice->Initializing VulkanDevice...");
 		m_Context = std::dynamic_pointer_cast<VulkanContext>(context);
-
-		if (!SelectDevice())
+		
+		m_PhysicalDevice = std::make_unique<VulkanPhysicalDevice>();
+		if (!m_PhysicalDevice->OnInit(m_Context))
 		{
-			ATRX_LOG_ERROR("ATRXVulkanPhysicalDevice->Error Selecting Physical Device!");
+			ATRX_LOG_ERROR("ATRXVulkanDevice->Error Initializing VulkanPhysicalDevice!");
 			return false;
 		}
 
-		ATRX_LOG_INFO("ATRXVulkanPhysicalDevice->Initialized VulkanPhysicalDevice!");
+		if (!InitLogicalDevice())
+		{
+			ATRX_LOG_ERROR("ATRXVulkanDevice->Error InitLogicalDevice!");
+			return false;
+		}
+
+		SetupQueueHandles();
+
+		ATRX_LOG_INFO("ATRXVulkanDevice->Initialized VulkanDevice!");
 		return m_Initialized = true;
 	}
 
-	void VulkanPhysicalDevice::OnDestroy()
+	void VulkanDevice::OnDestroy()
 	{
 		if (m_Initialized)
 		{
-			ATRX_LOG_INFO("ATRXVulkanPhysicalDevice->Destroying...");
-			m_PhysicalDevice = nullptr;
+			ATRX_LOG_INFO("ATRXVulkanDevice->Destroying...");
+			vkDestroyDevice(m_LogicalDevice, m_Context->GetAllocator());
+			m_PhysicalDevice->OnDestroy();
 			m_Context = nullptr;
-			ATRX_LOG_INFO("ATRXVulkanPhysicalDevice->Destroyed!");
+			ATRX_LOG_INFO("ATRXVulkanDevice->Destroyed!");
 			m_Initialized = false;
 		}
 	}
 
-	bool VulkanPhysicalDevice::SelectDevice()
+	bool VulkanDevice::InitLogicalDevice()
 	{
-		uint32_t gpuDeviceCount;
-		VkResult res = vkEnumeratePhysicalDevices(m_Context->GetInstance(), &gpuDeviceCount, nullptr);
+		ATRX_LOG_INFO("ATRXVulkanDevice->Initializing LogicalDevice...");
+		std::vector<const char*> deviceExtensions;
+		deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
+		VkDeviceCreateInfo deviceCreateInfo = { VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO };
+		deviceCreateInfo.queueCreateInfoCount = m_PhysicalDevice->GetRequestedQueueCreateInfos().size();
+		deviceCreateInfo.pQueueCreateInfos = m_PhysicalDevice->GetRequestedQueueCreateInfos().data();
+		deviceCreateInfo.pEnabledFeatures = &m_PhysicalDevice->GetRequestedFeatures();
+		deviceCreateInfo.enabledExtensionCount = deviceExtensions.size();
+		deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
+
+		VkResult res = vkCreateDevice(m_PhysicalDevice->GetInternalPhysicalDevice(), &deviceCreateInfo, m_Context->GetAllocator(), &m_LogicalDevice);
 		if (res != VK_SUCCESS)
 		{
-			ATRX_LOG_ERROR("ATRXVulkanPhysicalDevice->Error vkEnumeratePhysicalDevices!");
-			return false;
-		}
-		if (!gpuDeviceCount)
-		{
-			ATRX_LOG_ERROR("ATRXVulkanPhysicalDevice->Error No GPU Device Supports Vulkan!");
+			ATRX_LOG_ERROR("ATRXVulkanDevice->Error vkCreateDevice: ({})!", (int)res);
 			return false;
 		}
 
-		std::vector<VkPhysicalDevice> devices(gpuDeviceCount);
-		vkEnumeratePhysicalDevices(m_Context->GetInstance(), &gpuDeviceCount, devices.data());
-		for (const auto& device : devices)
-		{
-			VkPhysicalDeviceProperties properties;
-			vkGetPhysicalDeviceProperties(device, &properties);
-			VkPhysicalDeviceMemoryProperties memoryProperties;
-			vkGetPhysicalDeviceMemoryProperties(device, &memoryProperties);
-			VkPhysicalDeviceFeatures features;
-			vkGetPhysicalDeviceFeatures(device, &features);
-
-			VulkanPhysicalDeviceRequirements requirements;
-			requirements.Discrete = true;
-			requirements.Graphics = true;
-			requirements.Compute = false;
-			requirements.Transfer = true;
-			requirements.SamplerAnisotropy = true;
-			requirements.ExtensionNames.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-
-			if (CheckDeviceRequirements(requirements, device, properties, memoryProperties, features))
-			{
-				m_PhysicalDevice = device;
-				m_Properties = properties;
-				m_MemoryProperties = memoryProperties;
-				m_Features = features;
-				ATRX_LOG_INFO("ATRXVulkanDevice->Selecting Supported GPU({})!", properties.deviceName);
-				PrintDeviceProperties(device, properties, memoryProperties, features);
-				return true;
-			}
-		}
-
-		return false;
+		ATRX_LOG_INFO("ATRXVulkanDevice->Initialized LogicalDevice!");
+		return true;
 	}
 
-	bool VulkanPhysicalDevice::CheckDeviceRequirements(const VulkanPhysicalDeviceRequirements& requirements, VkPhysicalDevice device, const VkPhysicalDeviceProperties& properties, const VkPhysicalDeviceMemoryProperties& memoryProperties, const VkPhysicalDeviceFeatures& features)
+	void VulkanDevice::SetupQueueHandles()
 	{
-		ATRX_LOG_INFO("ATRXVulkanDevice->Checking GPU({}) For: Discrete({}), Graphics Queue({}), Compute Queue({}), Transfer Queue({}), SamplerAnisotropy({})!", properties.deviceName, requirements.Discrete, requirements.Graphics, requirements.Compute, requirements.Transfer, requirements.SamplerAnisotropy);
-
-		if (requirements.Discrete && properties.deviceType != VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-			return false;
-
-		// Check Queues
-		VulkanPhysicalDeviceQueueFamilyIndices queueFamilyIndices;
-		uint32_t queueFamilyCount;
-		vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
-		std::vector<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
-		vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilyProperties.data());
-
-		size_t idx = 0;
-		uint32_t min_transfer_score = 255;
-		for (const auto& queue : queueFamilyProperties)
-		{
-			uint32_t transfer_score = 0;
-
-			if (queue.queueFlags & VK_QUEUE_GRAPHICS_BIT)
-			{
-				queueFamilyIndices.Graphics = idx;
-				transfer_score++;
-			}
-
-			if (queue.queueFlags & VK_QUEUE_COMPUTE_BIT)
-			{
-				queueFamilyIndices.Compute = idx;
-				transfer_score++;
-			}
-
-			if (queue.queueFlags & VK_QUEUE_TRANSFER_BIT)
-			{
-				if (transfer_score <= min_transfer_score)
-				{
-					min_transfer_score = transfer_score;
-					queueFamilyIndices.Transfer = idx;
-				}
-			}
-
-			idx++;
-		}
-
-		if ((!requirements.Graphics || (requirements.Graphics && queueFamilyIndices.Graphics != -1)) &&
-			(!requirements.Compute || (requirements.Compute && queueFamilyIndices.Compute != -1)) &&
-			(!requirements.Transfer || (requirements.Transfer && queueFamilyIndices.Transfer != -1)))
-		{
-			ATRX_LOG_DEBUG("ATRXVulkanDevice->GPU({}) Queue Details: Discrete({}), Graphics Queue({}), Compute Queue({}), Transfer Queue({})!", properties.deviceName, requirements.Compute, queueFamilyIndices.Graphics, queueFamilyIndices.Compute, queueFamilyIndices.Transfer);
-		
-			// Check Extensions
-			uint32_t extensionCount = 0;
-			VkResult res = vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
-			if (res != VK_SUCCESS)
-			{
-				ATRX_LOG_ERROR("ATRXVulkanDevice->Error vkEnumerateDeviceExtensionProperties For GPU({}): ({})!", properties.deviceName, (int)res);
-				return false;
-			}
-
-			if (extensionCount)
-			{
-				std::vector<VkExtensionProperties> extensions(extensionCount);
-				res = vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, extensions.data());
-				if (res != VK_SUCCESS)
-				{
-					ATRX_LOG_ERROR("ATRXVulkanDevice->Error vkEnumerateDeviceExtensionProperties For GPU({})!: ({})!", properties.deviceName, (int)res);
-					return false;
-				}
-
-				for (size_t i = 0; i < requirements.ExtensionNames.size(); i++)
-				{
-					bool flag = false;
-					for (size_t j = 0; j < extensions.size(); j++)
-					{
-						if (!std::strcmp(requirements.ExtensionNames[i], extensions[j].extensionName))
-						{
-							flag = true;
-							ATRX_LOG_INFO("ATRXVulkanDevice->GPU({}) Found Vulkan Extension({})!", properties.deviceName, requirements.ExtensionNames[i]);
-							break;
-						}
-					}
-
-					if (!flag)
-					{
-						ATRX_LOG_ERROR("ATRXVulkanDevice->GPU({}) Could not Find Vulkan Extension({})!", properties.deviceName, requirements.ExtensionNames[i]);
-						return false;
-					}
-				}
-			}
-
-			// Others
-			if (requirements.SamplerAnisotropy)
-			{
-				if (!features.samplerAnisotropy)
-				{
-					ATRX_LOG_ERROR("ATRXVulkanDevice->GPU({}) Doesn't Support SamplerAnisotropy!", properties.deviceName);
-					return false;
-				}
-				else
-				{
-					ATRX_LOG_INFO("ATRXVulkanDevice->GPU({}) Supports SamplerAnisotropy!", properties.deviceName);
-				}
-			}
-
-			m_QueueFamilyIndices = queueFamilyIndices;
-			return true;
-		}
-
-		ATRX_LOG_ERROR("ATRXVulkanDevice->GPU({}) Did not Meet Requirements!", properties.deviceName);
-		return false;
-	}
-
-	void VulkanPhysicalDevice::PrintDeviceProperties(VkPhysicalDevice device, const VkPhysicalDeviceProperties& properties, const VkPhysicalDeviceMemoryProperties& memoryProperties, const VkPhysicalDeviceFeatures& features)
-	{
-		std::string deviceType;
-		switch (properties.deviceType)
-		{
-		case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
-			deviceType = "DISCRETE GPU";
-			break;
-		case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
-			deviceType = "INTEGRATED GPU";
-			break;
-		case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU:
-			deviceType = "VIRTUAL GPU";
-			break;
-		case VK_PHYSICAL_DEVICE_TYPE_CPU:
-			deviceType = "CPU";
-			break;
-		case VK_PHYSICAL_DEVICE_TYPE_OTHER:
-			deviceType = "UNKNOWN";
-			break;
-		default:
-			deviceType = "UNKNOWN";
-		}
-
-		ATRX_LOG_INFO("------------------------------GPU({})------------------------------", properties.deviceName);
-		ATRX_LOG_INFO("Type({})", deviceType);
-		ATRX_LOG_INFO("GPU Driver Version({}.{}.{})", VK_VERSION_MAJOR(properties.driverVersion), VK_VERSION_MINOR(properties.driverVersion), VK_VERSION_PATCH(properties.driverVersion));
-		ATRX_LOG_INFO("Vulkan API Version({}.{}.{})", VK_VERSION_MAJOR(properties.apiVersion), VK_VERSION_MINOR(properties.apiVersion), VK_VERSION_PATCH(properties.apiVersion));
-	
-		for (size_t i = 0; i < memoryProperties.memoryHeapCount; i++)
-		{
-			size_t memSize = (((float)memoryProperties.memoryHeaps[i].size) / 1024.0f / 1024.0f / 1024.0f);
-			if (memoryProperties.memoryHeaps[i].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT)
-				ATRX_LOG_INFO("Local GPU Memory({} GB)", memSize);
-			else
-				ATRX_LOG_INFO("Shared System Memory({} GB)", memSize);
-		}
-		ATRX_LOG_INFO("------------------------------END({})------------------------------", properties.deviceName);
+		vkGetDeviceQueue(m_LogicalDevice, m_PhysicalDevice->GetQueueFamilyIndices().Graphics, 0, &m_GraphicsQueue);
+		vkGetDeviceQueue(m_LogicalDevice, m_PhysicalDevice->GetQueueFamilyIndices().Compute, 0, &m_ComputeQueue);
+		vkGetDeviceQueue(m_LogicalDevice, m_PhysicalDevice->GetQueueFamilyIndices().Transfer, 0, &m_TransferQueue);
 	}
 }

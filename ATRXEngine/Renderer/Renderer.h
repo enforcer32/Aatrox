@@ -34,6 +34,6 @@ namespace ATRX
 		RendererBackendAPI m_BackendAPI;
 		std::shared_ptr<RendererContext> m_Context;
 		std::shared_ptr<RendererSurface> m_Surface;
-		std::shared_ptr<RendererDevice> m_PhysicalDevice;
+		std::shared_ptr<RendererDevice> m_Device;
 	};
 }

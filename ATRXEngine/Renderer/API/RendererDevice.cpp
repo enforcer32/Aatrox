@@ -10,7 +10,7 @@ namespace ATRX
 		case ATRX::RendererBackendAPI::None:
 			break;
 		case ATRX::RendererBackendAPI::Vulkan:
-			return std::make_shared<VulkanPhysicalDevice>();
+			return std::make_shared<VulkanDevice>();
 			break;
 		case ATRX::RendererBackendAPI::DirectX:
 			break;

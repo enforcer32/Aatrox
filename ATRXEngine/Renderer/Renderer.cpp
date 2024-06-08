@@ -1,10 +1,6 @@
 #include "ATRXEngine/Renderer/Renderer.h"
 #include "ATRXEngine/Core/Logger.h"
 
-// Vulkan
-#include "ATRXEngine/Platform/RHI/Vulkan/VulkanContext.h"
-#include "ATRXEngine/Platform/RHI/Vulkan/VulkanSurface.h"
-
 namespace ATRX
 {
 	bool Renderer::OnInit(RendererBackendAPI api)
@@ -19,10 +15,10 @@ namespace ATRX
 			return false;
 		}
 
-		m_PhysicalDevice = RendererDevice::CreateInstance(api);
-		if (!m_PhysicalDevice->OnInit(m_Context))
+		m_Device = RendererDevice::CreateInstance(api);
+		if (!m_Device->OnInit(m_Context))
 		{
-			ATRX_LOG_ERROR("ATRXRenderer->Error Initializing VulkanPhysicalDevice!");
+			ATRX_LOG_ERROR("ATRXRenderer->Error Initializing RendererDevice!");
 			return false;
 		}
 
@@ -37,7 +33,7 @@ namespace ATRX
 			ATRX_LOG_INFO("ATRXRenderer->Destroying...");
 			if (m_Surface)
 				m_Surface->OnDestroy();
-			m_PhysicalDevice->OnDestroy();
+			m_Device->OnDestroy();
 			m_Context->OnDestroy();
 			ATRX_LOG_INFO("ATRXRenderer->Destroyed!");
 			m_Initialized = false;

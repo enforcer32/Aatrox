@@ -54,6 +54,8 @@ file(GLOB_RECURSE ATRXEngineRHIVulkanRendererSources
 	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanContext.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanSurface.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanSurface.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanPhysicalDevice.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanPhysicalDevice.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanDevice.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanDevice.cpp"
 )

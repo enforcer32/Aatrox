@@ -3,8 +3,6 @@
 #include "ATRXEngine/Renderer/API/RendererBackend.h"
 #include "ATRXEngine/Renderer/API/RendererContext.h"
 
-#include <memory>
-
 namespace ATRX
 {
 	class RendererDevice
