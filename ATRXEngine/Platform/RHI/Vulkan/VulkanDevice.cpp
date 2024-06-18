@@ -8,7 +8,7 @@ namespace ATRX
 		ATRX_LOG_INFO("ATRXVulkanDevice->Initializing VulkanDevice...");
 		m_Context = std::dynamic_pointer_cast<VulkanContext>(context);
 		
-		m_PhysicalDevice = std::make_unique<VulkanPhysicalDevice>();
+		m_PhysicalDevice = std::make_shared<VulkanPhysicalDevice>();
 		if (!m_PhysicalDevice->OnInit(m_Context))
 		{
 			ATRX_LOG_ERROR("ATRXVulkanDevice->Error Initializing VulkanPhysicalDevice!");
@@ -38,6 +38,36 @@ namespace ATRX
 			ATRX_LOG_INFO("ATRXVulkanDevice->Destroyed!");
 			m_Initialized = false;
 		}
+	}
+
+	VkDevice VulkanDevice::GetInternalDevice() const
+	{
+		return m_LogicalDevice;
+	}
+
+	const std::shared_ptr<VulkanPhysicalDevice>& VulkanDevice::GetPhysicalDevice() const
+	{
+		return m_PhysicalDevice;
+	}
+
+	const char* VulkanDevice::GetDeviceName() const
+	{
+		return m_PhysicalDevice->GetDeviceName();
+	}
+
+	VkQueue VulkanDevice::GetGraphicsQueue() const
+	{
+		return m_GraphicsQueue;
+	}
+
+	VkQueue VulkanDevice::GetComputeQueue() const
+	{
+		return m_ComputeQueue;
+	}
+
+	VkQueue VulkanDevice::GetTransferQueue() const
+	{
+		return m_TransferQueue;
 	}
 
 	bool VulkanDevice::InitLogicalDevice()

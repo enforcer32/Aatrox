@@ -48,12 +48,12 @@ namespace ATRX
 		}
 	}
 
-	VkSurfaceKHR VulkanSurface::GetSurface() const
+	VkSurfaceKHR VulkanSurface::GetInternalSurface() const
 	{
 		return m_Surface;
 	}
 
-	void VulkanSurface::SetSurface(VkSurfaceKHR surface)
+	void VulkanSurface::SetInternalSurface(VkSurfaceKHR surface)
 	{
 		m_Surface = surface;
 	}

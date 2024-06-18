@@ -3,6 +3,8 @@
 #include "ATRXEngine/Platform/RHI/Vulkan/VulkanContext.h"
 
 #include <memory>
+#include <unordered_set>
+#include <string>
 #include <vulkan/vulkan.h>
 
 namespace ATRX
@@ -31,9 +33,11 @@ namespace ATRX
 		void OnDestroy();
 
 		VkPhysicalDevice GetInternalPhysicalDevice() const;
+		const char* GetDeviceName() const;
 		const VulkanPhysicalDeviceQueueFamilyIndices& GetQueueFamilyIndices() const;
 		const std::vector<VkDeviceQueueCreateInfo>& GetRequestedQueueCreateInfos() const;
 		const VkPhysicalDeviceFeatures& GetRequestedFeatures() const;
+		bool IsExtensionSupported(const std::string& extension) const;
 
 	private:
 		bool SelectDevice();
@@ -52,5 +56,6 @@ namespace ATRX
 		VulkanPhysicalDeviceQueueFamilyIndices m_QueueFamilyIndices;
 		std::vector<VkDeviceQueueCreateInfo> m_RequestedQueueCreateInfos;
 		VkPhysicalDeviceFeatures m_RequestedFeatures;
+		std::unordered_set<std::string> m_SupportedExtensions;
 	};
 }

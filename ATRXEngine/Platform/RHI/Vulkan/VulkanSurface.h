@@ -16,8 +16,8 @@ namespace ATRX
 
 		virtual void OnDestroy() override;
 
-		VkSurfaceKHR GetSurface() const;
-		void SetSurface(VkSurfaceKHR surface);
+		VkSurfaceKHR GetInternalSurface() const;
+		void SetInternalSurface(VkSurfaceKHR surface);
 
 	private:
 		bool m_Initialized = false;

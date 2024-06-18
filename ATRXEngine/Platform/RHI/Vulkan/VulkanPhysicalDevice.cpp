@@ -38,6 +38,11 @@ namespace ATRX
 		return m_PhysicalDevice;
 	}
 
+	const char* VulkanPhysicalDevice::GetDeviceName() const
+	{
+		return m_Properties.deviceName;
+	}
+
 	const VulkanPhysicalDeviceQueueFamilyIndices& VulkanPhysicalDevice::GetQueueFamilyIndices() const
 	{
 		return m_QueueFamilyIndices;
@@ -51,6 +56,11 @@ namespace ATRX
 	const VkPhysicalDeviceFeatures& VulkanPhysicalDevice::GetRequestedFeatures() const
 	{
 		return m_RequestedFeatures;
+	}
+
+	bool VulkanPhysicalDevice::IsExtensionSupported(const std::string& extension) const
+	{
+		return m_SupportedExtensions.find(extension) != m_SupportedExtensions.end();
 	}
 
 	bool VulkanPhysicalDevice::SelectDevice()
@@ -170,6 +180,9 @@ namespace ATRX
 					ATRX_LOG_ERROR("ATRXVulkanPhysicalDevice->Error vkEnumerateDeviceExtensionProperties For GPU({})!: ({})!", properties.deviceName, (int)res);
 					return false;
 				}
+
+				for (const auto& ext : extensions)
+					m_SupportedExtensions.emplace(ext.extensionName);
 
 				for (size_t i = 0; i < requirements.ExtensionNames.size(); i++)
 				{
