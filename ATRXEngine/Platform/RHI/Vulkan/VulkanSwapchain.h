@@ -4,6 +4,7 @@
 #include "ATRXEngine/Platform/RHI/Vulkan/VulkanContext.h"
 #include "ATRXEngine/Platform/RHI/Vulkan/VulkanDevice.h"
 #include "ATRXEngine/Platform/RHI/Vulkan/VulkanSurface.h"
+#include "ATRXEngine/Platform/RHI/Vulkan/VulkanImage.h"
 
 #include <vulkan/vulkan.h>
 #include <optional>
@@ -52,10 +53,12 @@ namespace ATRX
 		VulkanSwapchainCapabilities m_SwapchainCapabilities;
 		VkSwapchainKHR m_Swapchain;
 		VkSurfaceFormatKHR m_ImageFormat;
-		uint32_t m_ImageCount;
+		std::vector<VkImage> m_VulkanImages;
 		std::vector<VulkanSwapchainImage> m_Images;
 		VulkanSwapchainSemaphore m_Semaphores;
 		VkFence m_Fence;
 		uint32_t m_CurrentImageIndex;
+		uint32_t m_PresentQueueIndex;
+		std::shared_ptr<VulkanImage> m_DepthAttachment;
 	};
 }

@@ -39,6 +39,9 @@ namespace ATRX
 
 		m_Renderer->SetTargetSurface(m_Window->GetSurface(m_Renderer));
 
+		if(!m_Renderer->CreateSwapchain())
+			ATRX_LOG_CRITICAL("ATRXEngine->Failed to Initialize RendererSwapchain!");
+
 		ATRX_LOG_INFO("ATRXEngine->Initialized...");
 	}
 

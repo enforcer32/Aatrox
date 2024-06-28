@@ -1,10 +1,14 @@
 #include "ATRXEngine/Platform/RHI/Vulkan/VulkanSwapchain.h"
+#include "ATRXEngine/Platform/RHI/Vulkan/VulkanImage.h"
 #include "ATRXEngine/Core/Logger.h"
+
+#include <algorithm>
 
 namespace ATRX
 {
 	bool VulkanSwapchain::OnInit(const std::shared_ptr<RendererContext>& context, const std::shared_ptr<RendererDevice>& device, const std::shared_ptr<RendererSurface>& surface)
 	{
+		ATRX_LOG_INFO("ATRXVulkanSwapchain->Initializing...");
 		m_Context = std::dynamic_pointer_cast<VulkanContext>(context);
 		m_Device = std::dynamic_pointer_cast<VulkanDevice>(device);
 		m_Surface = std::dynamic_pointer_cast<VulkanSurface>(surface);
@@ -15,20 +19,175 @@ namespace ATRX
 			return false;
 		}
 
+		// Temporary Values: CONFIG
+		uint32_t width = 800, height = 600;
+		Create(width, height, false);
+
+		ATRX_LOG_INFO("ATRXVulkanSwapchain->Initialized!");
 		return m_Initialized = true;
 	}
 
 	void VulkanSwapchain::OnDestroy()
 	{
+		ATRX_LOG_INFO("ATRXVulkanSwapchain->Destroying...");
+		m_DepthAttachment->OnDestroy();
+		for (const auto& image : m_Images)
+			vkDestroyImageView(m_Device->GetInternalDevice(), image.ImageView, m_Context->GetAllocator());
+		vkDestroySwapchainKHR(m_Device->GetInternalDevice(), m_Swapchain, m_Context->GetAllocator());
+		ATRX_LOG_INFO("ATRXVulkanSwapchain->Destroyed!");
 	}
 
 	void VulkanSwapchain::Create(uint32_t width, uint32_t height, bool vsync)
 	{
+		ATRX_LOG_INFO("ATRXVulkanSwapchain->Creating...");
+		VkExtent2D swapchainExtent = { width, height };
 
+		// Surface Format
+		m_ImageFormat = m_SwapchainCapabilities.SurfaceFormats[0];
+		for (const auto& format : m_SwapchainCapabilities.SurfaceFormats)
+		{
+			if (format.format == VK_FORMAT_B8G8R8A8_UNORM && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+			{
+				m_ImageFormat = format;
+				break;
+			}
+		}
+
+		// Present Mode
+		VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
+		for (const auto& mode : m_SwapchainCapabilities.PresentModes)
+		{
+			if (mode == VK_PRESENT_MODE_MAILBOX_KHR)
+			{
+				presentMode = VK_PRESENT_MODE_FIFO_KHR;
+				break;
+			}
+		}
+
+		// Update Swapchain
+		FetchSwapchainCapabilities();
+
+		if (m_SwapchainCapabilities.SurfaceCapabilities.currentExtent.width != UINT32_MAX)
+			swapchainExtent = m_SwapchainCapabilities.SurfaceCapabilities.currentExtent;
+		
+		VkExtent2D min = m_SwapchainCapabilities.SurfaceCapabilities.minImageExtent;
+		VkExtent2D max = m_SwapchainCapabilities.SurfaceCapabilities.maxImageExtent;
+		swapchainExtent.width = std::clamp(swapchainExtent.width, min.width, max.width);
+		swapchainExtent.height = std::clamp(swapchainExtent.height, min.height, max.height);
+		
+		uint32_t imageCount = m_SwapchainCapabilities.SurfaceCapabilities.minImageCount + 1;
+		if (m_SwapchainCapabilities.SurfaceCapabilities.maxImageCount > 0 && imageCount > m_SwapchainCapabilities.SurfaceCapabilities.maxImageCount)
+			imageCount = m_SwapchainCapabilities.SurfaceCapabilities.maxImageCount;
+	
+		VkSwapchainCreateInfoKHR swapchainCreateInfo = { VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR };
+		swapchainCreateInfo.surface = m_Surface->GetInternalSurface();
+		swapchainCreateInfo.imageExtent = swapchainExtent;
+		swapchainCreateInfo.minImageCount = imageCount;
+		swapchainCreateInfo.imageFormat = m_ImageFormat.format;
+		swapchainCreateInfo.imageColorSpace = m_ImageFormat.colorSpace;
+		swapchainCreateInfo.imageArrayLayers = 1;
+		swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+		// Setup Queues
+		if (m_Device->GetPhysicalDevice()->GetQueueFamilyIndices().Graphics != m_PresentQueueIndex)
+		{
+			uint32_t queueFamilyIndices[] = { m_Device->GetPhysicalDevice()->GetQueueFamilyIndices().Graphics, m_PresentQueueIndex };
+			swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+			swapchainCreateInfo.queueFamilyIndexCount = 2;
+			swapchainCreateInfo.pQueueFamilyIndices = queueFamilyIndices;
+		}
+		else
+		{
+			swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			swapchainCreateInfo.queueFamilyIndexCount = 0;
+			swapchainCreateInfo.pQueueFamilyIndices = 0;
+		}
+
+		swapchainCreateInfo.preTransform = m_SwapchainCapabilities.SurfaceCapabilities.currentTransform;
+		swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+		swapchainCreateInfo.presentMode = presentMode;
+		swapchainCreateInfo.clipped = VK_TRUE;
+		swapchainCreateInfo.oldSwapchain = 0;
+
+		VkResult res = vkCreateSwapchainKHR(m_Device->GetInternalDevice(), &swapchainCreateInfo, m_Context->GetAllocator(), &m_Swapchain);
+		if (res != VK_SUCCESS)
+		{
+			ATRX_LOG_ERROR("ATRXVulkanSwapchain->Error vkCreateSwapchainKHR: ({})!", (int)res);
+			return;
+		}
+
+		// Setup Images
+		imageCount = 0;
+		res = vkGetSwapchainImagesKHR(m_Device->GetInternalDevice(), m_Swapchain, &imageCount, nullptr);
+		if (res != VK_SUCCESS)
+		{
+			ATRX_LOG_ERROR("ATRXVulkanSwapchain->Error vkGetSwapchainImagesKHR: ({})!", (int)res);
+			return;
+		}
+
+		m_VulkanImages.resize(imageCount);
+		res = vkGetSwapchainImagesKHR(m_Device->GetInternalDevice(), m_Swapchain, &imageCount, m_VulkanImages.data());
+		if (res != VK_SUCCESS)
+		{
+			ATRX_LOG_ERROR("ATRXVulkanSwapchain->Error vkGetSwapchainImagesKHR: ({})!", (int)res);
+			return;
+		}
+
+		m_Images.resize(imageCount);
+		for (size_t i = 0; i < m_VulkanImages.size(); i++)
+		{
+			VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO };
+			imageViewCreateInfo.image = m_VulkanImages[i];
+			imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+			imageViewCreateInfo.format = m_ImageFormat.format;
+			imageViewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
+			imageViewCreateInfo.subresourceRange.levelCount = 1;
+			imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
+			imageViewCreateInfo.subresourceRange.layerCount = 1;
+
+			m_Images[i].Image = m_VulkanImages[i];
+
+			res = vkCreateImageView(m_Device->GetInternalDevice(), &imageViewCreateInfo, m_Context->GetAllocator(), &m_Images[i].ImageView);
+			if (res != VK_SUCCESS)
+			{
+				ATRX_LOG_ERROR("ATRXVulkanSwapchain->Error vkCreateImageView: ({})!", (int)res);
+				return;
+			}
+		}
+
+		// Depth Format
+		VkFormat depthFormat = m_Device->GetPhysicalDevice()->GetDepthFormat();
+		if (depthFormat == VK_FORMAT_UNDEFINED)
+		{
+			ATRX_LOG_ERROR("ATRXVulkanSwapchain->Error depthFormat VK_FORMAT_UNDEFINED!");
+			return;
+		}
+
+		RendererImageProperties depthImageProperties;
+		depthImageProperties.Format = depthFormat;
+		depthImageProperties.Usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+		depthImageProperties.Width = swapchainExtent.width;
+		depthImageProperties.Height = swapchainExtent.height;
+		depthImageProperties.Depth = 1;
+		depthImageProperties.Mips = 4;
+		depthImageProperties.Layers = 1;
+		depthImageProperties.AspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
+		depthImageProperties.MemoryType = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+
+		m_DepthAttachment = std::make_shared<VulkanImage>();
+		if (!m_DepthAttachment->OnInit(m_Context, m_Device, depthImageProperties))
+		{
+			ATRX_LOG_ERROR("ATRXVulkanSwapchain->Error m_DepthAttachment OnInit!");
+			return;
+		}
+
+		ATRX_LOG_INFO("ATRXVulkanSwapchain->Created!");
 	}
 
 	void VulkanSwapchain::Present()
 	{
+		ATRX_LOG_INFO("ATRXVulkanSwapchain->Presenting...");
 		VkPresentInfoKHR presentInfo = { VK_STRUCTURE_TYPE_PRESENT_INFO_KHR };
 		presentInfo.waitSemaphoreCount = 1;
 		presentInfo.pWaitSemaphores = &m_Semaphores.Render;
@@ -48,10 +207,13 @@ namespace ATRX
 			ATRX_LOG_ERROR("ATRXVulkanSwapchain->Error vkQueuePresentKHR: ({})!", (int)res);
 			return;
 		}
+
+		ATRX_LOG_INFO("ATRXVulkanSwapchain->Presented!");
 	}
 
 	bool VulkanSwapchain::InitSurfaceAndPresent()
 	{
+		ATRX_LOG_INFO("ATRXVulkanSwapchain->Initializing SurfaceAndPresent...");
 		const VulkanPhysicalDeviceQueueFamilyIndices& queueIndices = m_Device->GetPhysicalDevice()->GetQueueFamilyIndices();
 
 		// Setup Present Queue
@@ -89,6 +251,8 @@ namespace ATRX
 			return false;
 		}
 
+		m_PresentQueueIndex = favoredPresentQueueIdx;
+		ATRX_LOG_INFO("ATRXVulkanSwapchain->Initialized SurfaceAndPresent!");
 		return true;
 	}
 

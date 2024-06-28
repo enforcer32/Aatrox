@@ -31,6 +31,7 @@ namespace ATRX
 		if(m_Initialized)
 		{
 			ATRX_LOG_INFO("ATRXRenderer->Destroying...");
+			m_Swapchain->OnDestroy();
 			if (m_Surface)
 				m_Surface->OnDestroy();
 			m_Device->OnDestroy();
@@ -55,6 +56,17 @@ namespace ATRX
 			ATRX_LOG_ERROR("ATRXRenderer->SetTargetSurface Invalid Surface!");
 		else
 			m_Surface = surface;
+	}
+
+	bool Renderer::CreateSwapchain()
+	{
+		m_Swapchain = RendererSwapchain::CreateInstance(m_BackendAPI);
+		if (!m_Swapchain->OnInit(m_Context, m_Device, m_Surface))
+		{
+			ATRX_LOG_ERROR("ATRXRenderer->Error Initializing RendererSwapchain!");
+			return false;
+		}
+		return true;
 	}
 
 	RendererBackendAPI Renderer::GetBackendAPI() const

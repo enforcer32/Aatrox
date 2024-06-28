@@ -37,6 +37,8 @@ namespace ATRX
 		const VulkanPhysicalDeviceQueueFamilyIndices& GetQueueFamilyIndices() const;
 		const std::vector<VkDeviceQueueCreateInfo>& GetRequestedQueueCreateInfos() const;
 		const VkPhysicalDeviceFeatures& GetRequestedFeatures() const;
+		VkFormat GetDepthFormat() const;
+		int32_t GetMemoryTypeIndex(uint32_t memoryTypeBits, VkMemoryPropertyFlags properties);
 		bool IsExtensionSupported(const std::string& extension) const;
 
 	private:
@@ -45,6 +47,7 @@ namespace ATRX
 		void PrintDeviceProperties(VkPhysicalDevice device, const VkPhysicalDeviceProperties& properties, const VkPhysicalDeviceMemoryProperties& memoryProperties, const VkPhysicalDeviceFeatures& features);
 		void RequestDeviceQueues(int32_t queueTypes);
 		void RequestDeviceFeatures();
+		VkFormat DetectDepthFormat() const;
 
 	private:
 		bool m_Initialized = false;
@@ -57,5 +60,6 @@ namespace ATRX
 		std::vector<VkDeviceQueueCreateInfo> m_RequestedQueueCreateInfos;
 		VkPhysicalDeviceFeatures m_RequestedFeatures;
 		std::unordered_set<std::string> m_SupportedExtensions;
+		VkFormat m_DepthFormat = VK_FORMAT_UNDEFINED;
 	};
 }

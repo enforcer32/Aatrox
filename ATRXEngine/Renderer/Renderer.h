@@ -4,6 +4,7 @@
 #include "ATRXEngine/Renderer/API/RendererContext.h"
 #include "ATRXEngine/Renderer/API/RendererSurface.h"
 #include "ATRXEngine/Renderer/API/RendererDevice.h"
+#include "ATRXEngine/Renderer/API/RendererSwapchain.h"
 
 namespace ATRX
 {
@@ -20,6 +21,7 @@ namespace ATRX
 
 		bool DrawFrame(RenderPacket packet);
 		void SetTargetSurface(const std::shared_ptr<RendererSurface> surface);
+		bool CreateSwapchain();
 
 		RendererBackendAPI GetBackendAPI() const;
 		std::shared_ptr<RendererContext> GetContext() const;
@@ -35,5 +37,6 @@ namespace ATRX
 		std::shared_ptr<RendererContext> m_Context;
 		std::shared_ptr<RendererSurface> m_Surface;
 		std::shared_ptr<RendererDevice> m_Device;
+		std::shared_ptr<RendererSwapchain> m_Swapchain;
 	};
 }

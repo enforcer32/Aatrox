@@ -17,6 +17,13 @@ namespace ATRX
 		RequestDeviceQueues(VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT | VK_QUEUE_TRANSFER_BIT);
 		RequestDeviceFeatures();
 
+		m_DepthFormat = DetectDepthFormat();
+		if (m_DepthFormat == VK_FORMAT_UNDEFINED)
+		{
+			ATRX_LOG_ERROR("ATRXVulkanPhysicalDevice->Error m_DepthFormat VK_FORMAT_UNDEFINED!");
+			return false;
+		}
+
 		ATRX_LOG_INFO("ATRXVulkanPhysicalDevice->Initialized VulkanPhysicalDevice!");
 		return m_Initialized = true;
 	}
@@ -56,6 +63,20 @@ namespace ATRX
 	const VkPhysicalDeviceFeatures& VulkanPhysicalDevice::GetRequestedFeatures() const
 	{
 		return m_RequestedFeatures;
+	}
+
+	VkFormat VulkanPhysicalDevice::GetDepthFormat() const
+	{
+		return m_DepthFormat;
+	}
+	
+	int32_t VulkanPhysicalDevice::GetMemoryTypeIndex(uint32_t memoryTypeBits, VkMemoryPropertyFlags properties)
+	{
+		for (size_t i = 0; i < m_MemoryProperties.memoryTypeCount; i++)
+			if (memoryTypeBits & (1 << i) && (m_MemoryProperties.memoryTypes[i].propertyFlags & properties) == properties)
+				return i;
+		ATRX_LOG_ERROR("ATRXVulkanPhysicalDevice->Error GetMemoryTypeIndex(-1)!");
+		return -1;
 	}
 
 	bool VulkanPhysicalDevice::IsExtensionSupported(const std::string& extension) const
@@ -311,5 +332,28 @@ namespace ATRX
 	void VulkanPhysicalDevice::RequestDeviceFeatures()
 	{
 		m_RequestedFeatures.samplerAnisotropy = VK_TRUE;
+	}
+
+	VkFormat VulkanPhysicalDevice::DetectDepthFormat() const
+	{
+		uint32_t flags = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+		std::vector<VkFormat> depthFormats = {
+			VK_FORMAT_D32_SFLOAT,
+			VK_FORMAT_D32_SFLOAT_S8_UINT,
+			VK_FORMAT_D24_UNORM_S8_UINT
+		};
+
+		for (const auto& format : depthFormats)
+		{
+			VkFormatProperties properties;
+			vkGetPhysicalDeviceFormatProperties(m_PhysicalDevice, format, &properties);
+
+			if ((properties.linearTilingFeatures & flags) == flags)
+				return format;
+			else if ((properties.optimalTilingFeatures & flags) == flags)
+				return format;
+		}
+
+		return VK_FORMAT_UNDEFINED;
 	}
 }

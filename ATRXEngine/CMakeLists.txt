@@ -44,6 +44,8 @@ file(GLOB_RECURSE ATRXEngineRendererAPISources
 	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererDevice.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererSwapchain.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererSwapchain.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererImage.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Renderer/API/RendererImage.cpp"
 )
 
 file(GLOB_RECURSE ATRXEngineRendererSources
@@ -62,6 +64,8 @@ file(GLOB_RECURSE ATRXEngineRHIVulkanRendererSources
 	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanDevice.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanSwapchain.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanSwapchain.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanImage.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Platform/RHI/Vulkan/VulkanImage.cpp"
 )
 
 add_definitions(-DATRX_ENGINE_BUILD -DATRX_ENGINE_DEBUG)
